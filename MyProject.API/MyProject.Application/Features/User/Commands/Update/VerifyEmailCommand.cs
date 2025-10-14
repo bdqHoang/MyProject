@@ -1,10 +1,5 @@
 ﻿using MediatR;
 using MyProject.Application.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyProject.Application.Features.User.Commands.Update
 {
@@ -17,7 +12,7 @@ namespace MyProject.Application.Features.User.Commands.Update
             var user = await userRepository.GetUserByEmailAsync(email);
             if (user == null)
             {
-                return null;
+                throw new KeyNotFoundException("User not found.");
             }
             user.IsValidEmail = true;
             user.UpdatedAt = DateTime.UtcNow;

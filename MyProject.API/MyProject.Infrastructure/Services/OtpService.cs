@@ -33,11 +33,11 @@ namespace MyProject.Infrastructure.Service
             var storedOtp = await redisService.GetAsync(key);
             if (string.IsNullOrEmpty(storedOtp))
             {
-                return false;
+                throw new InvalidOperationException("OTP expired or not found.");
             }
             if (!storedOtp.Equals(otp))
             {
-                return false;
+                throw new InvalidOperationException("Invalid OTP.");
             }
             await redisService.DeleteAsync(key);
             key = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{email}:verified"));

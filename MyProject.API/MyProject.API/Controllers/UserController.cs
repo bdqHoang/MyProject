@@ -59,14 +59,6 @@ namespace MyProject.API.Controllers
             var query = new GetUserByIdQuery(id);
             var result = await sender.Send(query);
 
-            if (result == null)
-            {
-                return NotFound(ApiResponse<object>.ErrorResponse(
-                    $"User with ID {id} not found",
-                    StatusCodes.Status404NotFound
-                ));
-            }
-
             return Ok(ApiResponse<UserDetailRes>.SuccessResponse(result, "User fetched successfully"));
         }
 
@@ -146,11 +138,7 @@ namespace MyProject.API.Controllers
         public async Task<IActionResult> SendVerifyEmail()
         {
             var email = User.FindFirst(ClaimTypes.Email)?.Value;
-            var result = await emailService.SendVerifyEmail(email);
-            if (!result)
-            {
-                return BadRequest(ApiResponse<bool>.ErrorResponse("Failed to send verify email. Please try again later."));
-            }
+            var result = await emailService.SendVerifyEmail(email!);
             return Ok(ApiResponse<bool>.SuccessResponse(result, "If the email is registered, please check verify email in email"));
         }
 
@@ -168,85 +156,50 @@ namespace MyProject.API.Controllers
             var command = new VerifyEmailCommand(token);
             var result = await sender.Send(command);
 
-            if (result == null) 
-            {
-                var failHtml = @"
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Verification Failed</title>
-            <style>
-                body {
-                    font-family: 'Segoe UI', Arial;
-                    background-color: #f8f9fa;
-                    text-align: center;
-                    margin-top: 100px;
-                }
-                .card {
-                    display: inline-block;
-                    padding: 40px;
-                    background: #fff;
-                    border-radius: 12px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                }
-                h1 { color: #dc3545; }
-                p { color: #666; }
-            </style>
-        </head>
-        <body>
-            <div class='card'>
-                <h1>Verification Failed</h1>
-                <p>This email verification link is invalid or expired.</p>
-            </div>
-        </body>
-        </html>";
-                return Content(failHtml, "text/html");
-            }
-
             var successHtml = $@"
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Email Verified</title>
-        <style>
-            body {{
-                font-family: 'Segoe UI', Arial;
-                background-color: #f0f2f5;
-                text-align: center;
-                margin-top: 100px;
-            }}
-            .card {{
-                display: inline-block;
-                padding: 40px;
-                background: #fff;
-                border-radius: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }}
-            h1 {{ color: #28a745; }}
-            p {{ color: #555; }}
-            a {{
-                display: inline-block;
-                margin-top: 20px;
-                padding: 12px 24px;
-                color: white;
-                background-color: #4f46e5;
-                border-radius: 8px;
-                text-decoration: none;
-                font-weight: 600;
-            }}
-            a:hover {{
-                background-color: #4338ca;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class='card'>
-            <h1>Email Verified Successfully!</h1>
-            <p>Thank you, <strong>{result}</strong> has been verified successfully.</p>
-            <a href='https://yourfrontend.com/login'>Go to Login</a>
-        </div>
-    </body>
-    </html>";
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Email Verified</title>
+                    <style>
+                        body {{
+                            font-family: 'Segoe UI', Arial;
+                            background-color: #f0f2f5;
+                            text-align: center;
+                            margin-top: 100px;
+                        }}
+                        .card {{
+                            display: inline-block;
+                            padding: 40px;
+                            background: #fff;
+                            border-radius: 12px;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                        }}
+                        h1 {{ color: #28a745; }}
+                        p {{ color: #555; }}
+                        a {{
+                            display: inline-block;
+                            margin-top: 20px;
+                            padding: 12px 24px;
+                            color: white;
+                            background-color: #4f46e5;
+                            border-radius: 8px;
+                            text-decoration: none;
+                            font-weight: 600;
+                        }}
+                        a:hover {{
+                            background-color: #4338ca;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class='card'>
+                        <h1>Email Verified Successfully!</h1>
+                        <p>Thank you, <strong>{result}</strong> has been verified successfully.</p>
+                        <a href='https://yourfrontend.com/login'>Go to Login</a>
+                    </div>
+                </body>
+                </html>";
 
             return Content(successHtml, "text/html");
 

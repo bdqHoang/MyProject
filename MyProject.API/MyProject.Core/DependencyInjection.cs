@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace MyProject.Application
+namespace MyProject.Core
 {
     public static class DependencyInjection
     {

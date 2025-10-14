@@ -42,13 +42,6 @@ namespace MyProject.API.Controllers
         {
             var query = new GetRoleByIdQuery(id);
             var result = await sender.Send(query);
-            if (result == null)
-            {
-                return NotFound(ApiResponse<object>.ErrorResponse(
-                    $"Role with ID {id} not found",
-                    StatusCodes.Status404NotFound
-                ));
-            }
 
             return Ok(ApiResponse<RoleDetailRes>.SuccessResponse(result, "Role fetched successfully"));
         }

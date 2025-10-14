@@ -140,10 +140,6 @@ namespace MyProject.API.Controllers
         {
             var command = new SendOtpCommand(email);
             var result = await sender.Send(command);
-            if (!result)
-            {
-                return BadRequest(ApiResponse<bool>.ErrorResponse("Failed to send OTP. Please try again later."));
-            }
             return Ok(ApiResponse<bool>.SuccessResponse(result, "If the email is registered, please check otp in email"));
         }
 
@@ -160,10 +156,6 @@ namespace MyProject.API.Controllers
         {
             var command = new VerifyOtpCommand(req);
             var result = await sender.Send(command);
-            if (!result)
-            {
-                return BadRequest(ApiResponse<bool>.ErrorResponse("Invalid OTP or OTP has expired"));
-            }
             return Ok(ApiResponse<bool>.SuccessResponse(result, "Otp verify successfully"));
         }
 
@@ -180,10 +172,6 @@ namespace MyProject.API.Controllers
         {
             var command = new ResetPasswordCommand(req);
             var result = await sender.Send(command);
-            if (!result)
-            {
-                return BadRequest(ApiResponse<bool>.ErrorResponse("Failed to reset password. Invalid request or OTP not verified."));
-            }
             return Ok(ApiResponse<bool>.SuccessResponse(result, "Reset password successfully"));
         }
     }

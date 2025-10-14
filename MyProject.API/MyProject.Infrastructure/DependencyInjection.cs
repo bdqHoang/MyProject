@@ -7,7 +7,7 @@ using MyProject.Infrastructure.Repositories;
 using MyProject.Infrastructure.Service;
 using StackExchange.Redis;
 
-namespace MyProject.Application
+namespace MyProject.Infrastructure
 {
     public static class DependencyInjection
     {
@@ -28,15 +28,13 @@ namespace MyProject.Application
                 configuration.ConnectTimeout = 5000;
                 configuration.SyncTimeout = 5000;
                 return ConnectionMultiplexer.Connect(configuration);
-            });
-
-
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IRoleRepository, RoleRepository>();
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IRedisService, RedisService>();
-            services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IOtpService, OtpService>();
+            })
+            .AddScoped<IUserRepository, UserRepository>()
+            .AddScoped<IRoleRepository, RoleRepository>()
+            .AddScoped<ITokenService, TokenService>()
+            .AddScoped<IRedisService, RedisService>()
+            .AddScoped<IEmailService, EmailService>()
+            .AddScoped<IOtpService, OtpService>();
 
             return services;
         }

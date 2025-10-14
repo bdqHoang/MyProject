@@ -19,7 +19,7 @@ namespace MyProject.Application.Features.Auth.Command.FogotPassword
             var data = await redisService.GetAsync(key);
             if (string.IsNullOrEmpty(data))
             {
-                return false;
+                throw new UnauthorizedAccessException("OTP not verified or expired");
             }
 
             var user = await userRepository.GetUserByEmailAsync(request.data.Email);
