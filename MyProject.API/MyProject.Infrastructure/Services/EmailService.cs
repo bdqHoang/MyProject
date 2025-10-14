@@ -3,7 +3,7 @@ using MyProject.Application.Interface;
 using System.Net;
 using System.Net.Mail;
 
-namespace MyProject.Infrastructure.Service
+namespace MyProject.Infrastructure.Services
 {
     public class EmailService(IConfiguration configuration, ITokenService tokenService) : IEmailService
     {
@@ -23,7 +23,7 @@ namespace MyProject.Infrastructure.Service
                     UseDefaultCredentials = false
                 };
 
-                var message = new MailMessage(smtpUser, toEmail)
+                var message = new MailMessage(smtpUser!, toEmail)
                 {
                     Subject = subject,
                     Body = body,

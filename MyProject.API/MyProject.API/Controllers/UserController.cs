@@ -8,7 +8,7 @@ using MyProject.Application.Features.User.Commands.Update;
 using MyProject.Application.Features.User.DTO;
 using MyProject.Application.Features.User.Queries;
 using MyProject.Application.Interface;
-using MyProject.Core.Entities;
+using MyProject.Core.Enum;
 using System.Security.Claims;
 
 namespace MyProject.API.Controllers
@@ -123,7 +123,7 @@ namespace MyProject.API.Controllers
         public async Task<IActionResult> UpdateUserAsync(Guid id, [FromBody] UpdateUserReq user)
         {
             var command = new UpdateUserCommand(id, user);
-            var result = await sender.Send(command);
+            var _ = await sender.Send(command);
             return NoContent();
         }
 
@@ -156,53 +156,87 @@ namespace MyProject.API.Controllers
             var command = new VerifyEmailCommand(token);
             var result = await sender.Send(command);
 
-            var successHtml = $@"
+            if (!result) 
+            {
+                var failHtml = @"
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>Email Verified</title>
+                    <title>Verification Failed</title>
                     <style>
-                        body {{
+                        body {
                             font-family: 'Segoe UI', Arial;
-                            background-color: #f0f2f5;
+                            background-color: #f8f9fa;
                             text-align: center;
                             margin-top: 100px;
-                        }}
-                        .card {{
+                        }
+                        .card {
                             display: inline-block;
                             padding: 40px;
                             background: #fff;
                             border-radius: 12px;
                             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                        }}
-                        h1 {{ color: #28a745; }}
-                        p {{ color: #555; }}
-                        a {{
-                            display: inline-block;
-                            margin-top: 20px;
-                            padding: 12px 24px;
-                            color: white;
-                            background-color: #4f46e5;
-                            border-radius: 8px;
-                            text-decoration: none;
-                            font-weight: 600;
-                        }}
-                        a:hover {{
-                            background-color: #4338ca;
-                        }}
+                        }
+                        h1 { color: #dc3545; }
+                        p { color: #666; }
                     </style>
                 </head>
                 <body>
                     <div class='card'>
-                        <h1>Email Verified Successfully!</h1>
-                        <p>Thank you, <strong>{result}</strong> has been verified successfully.</p>
-                        <a href='https://yourfrontend.com/login'>Go to Login</a>
+                        <h1>Verification Failed</h1>
+                        <p>This email verification link is invalid or expired.</p>
                     </div>
                 </body>
                 </html>";
+                return Content(failHtml, "text/html");
+            }
+
+            var successHtml = $@"
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Email Verified</title>
+                <style>
+                    body {{
+                        font-family: 'Segoe UI', Arial;
+                        background-color: #f0f2f5;
+                        text-align: center;
+                        margin-top: 100px;
+                    }}
+                    .card {{
+                        display: inline-block;
+                        padding: 40px;
+                        background: #fff;
+                        border-radius: 12px;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    }}
+                    h1 {{ color: #28a745; }}
+                    p {{ color: #555; }}
+                    a {{
+                        display: inline-block;
+                        margin-top: 20px;
+                        padding: 12px 24px;
+                        color: white;
+                        background-color: #4f46e5;
+                        border-radius: 8px;
+                        text-decoration: none;
+                        font-weight: 600;
+                    }}
+                    a:hover {{
+                        background-color: #4338ca;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class='card'>
+                    <h1>Email Verified Successfully!</h1>
+                    <p>Thank you,Your email has been verified successfully.</p>
+                    <a href='https://yourfrontend.com/login'>Go to Login</a>
+                </div>
+            </body>
+            </html>";
 
             return Content(successHtml, "text/html");
-
         }
     }
 }

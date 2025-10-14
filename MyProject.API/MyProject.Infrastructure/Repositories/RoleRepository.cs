@@ -51,7 +51,7 @@ namespace MyProject.Infrastructure.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public async Task<Roles> GetRoleByIdAsync(Guid id)
         {
-            return await dbContext.Roles.FirstOrDefaultAsync(r => r.Id == id);
+            return (await dbContext.Roles.FirstOrDefaultAsync(r => r.Id == id))!;
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace MyProject.Infrastructure.Repositories
         /// <returns></returns>
         public async Task<Roles> GetRoleByNameAsync(string name)
         {
-            return await dbContext.Roles.FirstOrDefaultAsync(r => r.Name == name);
+            return (await dbContext.Roles.FirstOrDefaultAsync(r => r.Name == name))!;
         }
 
         /// <summary>

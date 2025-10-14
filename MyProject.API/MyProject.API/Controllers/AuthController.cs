@@ -12,6 +12,7 @@ using MyProject.Application.Features.User.Queries;
 using MyProject.Application.Interface;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography.Xml;
 
 namespace MyProject.API.Controllers
 {
@@ -50,7 +51,7 @@ namespace MyProject.API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterReq registerReq)
         {
             var command = new RegisterCommand(registerReq);
-            var result = await sender.Send(command);
+            var _= await sender.Send(command);
             return Ok(ApiResponse<bool>.SuccessResponse(true, "Register successfully"));
         }
 
@@ -66,7 +67,7 @@ namespace MyProject.API.Controllers
         public async Task<IActionResult> GetCurrentUser()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var query = new GetUserByIdQuery(Guid.Parse(userId));
+            var query = new GetUserByIdQuery(Guid.Parse(userId!));
             var user = await sender.Send(query);
             return Ok(ApiResponse<UserDetailRes>.SuccessResponse(user, "Successfully"));
         }
@@ -82,11 +83,11 @@ namespace MyProject.API.Controllers
         public async Task<IActionResult> Logout()
         {
             // get token from header
-            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var token = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
 
             if (string.IsNullOrEmpty(token))
             {
-                return Unauthorized(ApiResponse<object>.ErrorResponse("No token provided"));
+                throw new UnauthorizedAccessException("No token provided.");
             }
 
             try
@@ -103,9 +104,9 @@ namespace MyProject.API.Controllers
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ApiResponse<object>.ErrorResponse("An error occurred during logout"));
+                throw new Exception("An error occurred during logout.");
             }
 
             return NoContent();

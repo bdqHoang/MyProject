@@ -1,12 +1,12 @@
 ﻿using MyProject.Application.Interface;
 using StackExchange.Redis;
 
-namespace MyProject.Infrastructure.Service
+namespace MyProject.Infrastructure.Services
 {
     public class RedisService : IRedisService
     {
-        IConnectionMultiplexer _redis;
-        IDatabase _db;
+        private readonly IConnectionMultiplexer _redis;
+        private readonly IDatabase _db;
 
         public RedisService(IConnectionMultiplexer redis)
         {
@@ -30,7 +30,7 @@ namespace MyProject.Infrastructure.Service
         public async Task<string> GetAsync(string key)
         {
             var value = await _db.StringGetAsync(key);
-            return value.HasValue ? value.ToString() : null;
+            return (value.HasValue ? value.ToString() : null)!;
         }
 
         public async Task<bool> IsExistsAsync(string key)

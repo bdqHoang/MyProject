@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using MyProject.Application.Features.Auth.DTO;
 using MyProject.Application.Interface;
 using MyProject.Core.Entities;
+using MyProject.Core.Enum;
 
 namespace MyProject.Application.Features.Auth.Command.Register
 {
-    public record RegisterCommand(RegisterReq data) : IRequest<bool>;
+    public record RegisterCommand(RegisterReq Data) : IRequest<bool>;
     public class RegisterCommandHandler(
         IUserRepository _userRepository,
         IRoleRepository _roleRepository,
@@ -17,10 +18,10 @@ namespace MyProject.Application.Features.Auth.Command.Register
     {
         public async Task<bool> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var user = _mapper.Map<Users>(request.data);
+            var user = _mapper.Map<Users>(request.Data);
             user.Id = Guid.NewGuid();
             user.IsValidEmail = false;
-            user.Password = _passwordHasher.HashPassword(user, request.data.Password);
+            user.Password = _passwordHasher.HashPassword(user, request.Data.Password);
             user.RoleId = (await _roleRepository.GetRoleByNameAsync(RoleName.User)).Id;
             user.CreatedAt = DateTime.UtcNow;
             user.UpdatedAt = DateTime.UtcNow;

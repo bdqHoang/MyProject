@@ -62,12 +62,12 @@ namespace MyProject.Infrastructure.Repositories
                                     UpdatedAt = u.UpdatedAt,
                                     Status = u.Status
                                 }).FirstOrDefaultAsync();
-            return result;
+            return result!;
         }
 
         public async Task<Users> GetUserByEmailAsync(string email)
         {
-            return await dbContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
+            return (await dbContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(email)))!;
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace MyProject.Infrastructure.Repositories
         public async Task<bool> DeleteUserAsync(Guid id)
         {
             var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
-            dbContext.Users.Remove(user);
+            dbContext.Users.Remove(user!);
             return await dbContext.SaveChangesAsync() > 0;
         }
 
@@ -123,7 +123,7 @@ namespace MyProject.Infrastructure.Repositories
 
         public async Task<Users> GetUserByPhoneAsync(string phone)
         {
-            return await dbContext.Users.FirstOrDefaultAsync(x => x.Phone == phone);
+            return (await dbContext.Users.FirstOrDefaultAsync(x => x.Phone == phone))!;
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace MyProject.Infrastructure.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public async Task<Users> GetUserByRefreshTokenAsync(string token)
         {
-            return await dbContext.Users.FirstOrDefaultAsync(x => x.RefreshToken == token);
+            return (await dbContext.Users.FirstOrDefaultAsync(x => x.RefreshToken == token))!;
         }
     }
 }

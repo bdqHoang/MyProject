@@ -9,16 +9,11 @@ using System.Security.Cryptography;
 using System.Text;
 
 
-namespace MyProject.Infrastructure.Service
+namespace MyProject.Infrastructure.Services
 {
-    public class TokenService : ITokenService
+    public class TokenService(IOptions<JwtSettings> jwtSetting) : ITokenService
     {
-        private readonly JwtSettings _jwtSettings;
-
-        public TokenService(IOptions<JwtSettings> jwtSetting)
-        {
-            _jwtSettings = jwtSetting.Value;
-        }
+        private readonly JwtSettings _jwtSettings = jwtSetting.Value;
 
         /// <summary>
         /// generate access token
@@ -71,10 +66,10 @@ namespace MyProject.Infrastructure.Service
             var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
+                Subject = new ClaimsIdentity(
+                [
                     new Claim(ClaimTypes.Email, email)
-                }),
+                ]),
                 Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes),
                 Issuer = _jwtSettings.Issuer,
                 Audience = _jwtSettings.Audience,
@@ -86,7 +81,7 @@ namespace MyProject.Infrastructure.Service
 
         public bool ValidateEmailToken(string token, out string email)
         {
-            email = null;
+            email = "";
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
             try

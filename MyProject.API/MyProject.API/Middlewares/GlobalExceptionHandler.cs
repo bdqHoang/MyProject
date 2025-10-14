@@ -30,7 +30,7 @@ namespace MyProject.API.Middlewares
                 ValidationException fvEx => (
                     StatusCodes.Status400BadRequest,
                     ApiResponse<object>.ErrorResponse(
-                        fvEx.Errors.Select(e => e.ErrorMessage).FirstOrDefault(),
+                        fvEx.Errors.Select(e => e.ErrorMessage).FirstOrDefault()!,
                         StatusCodes.Status400BadRequest
                     )
                 ),

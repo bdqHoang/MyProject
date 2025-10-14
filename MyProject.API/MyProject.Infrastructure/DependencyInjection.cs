@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MyProject.Application.Interface;
 using MyProject.Infrastructure.Data;
 using MyProject.Infrastructure.Repositories;
-using MyProject.Infrastructure.Service;
+using MyProject.Infrastructure.Services;
 using StackExchange.Redis;
 
 namespace MyProject.Infrastructure
@@ -23,7 +23,7 @@ namespace MyProject.Infrastructure
             var redisConnectionString = configuration.GetConnectionString("RedisConnection");
             services.AddSingleton<IConnectionMultiplexer>(options =>
             {
-                var configuration = ConfigurationOptions.Parse(redisConnectionString);
+                var configuration = ConfigurationOptions.Parse(redisConnectionString!);
                 configuration.AbortOnConnectFail = false;
                 configuration.ConnectTimeout = 5000;
                 configuration.SyncTimeout = 5000;

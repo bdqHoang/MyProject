@@ -3,21 +3,24 @@ using MyProject.Application.Interface;
 
 namespace MyProject.Application.Features.User.Commands.Update
 {
-    public record VerifyEmailCommand(string token) : IRequest<string>;
-    public class VerifyEmailCommandHandler(IUserRepository userRepository, ITokenService tokenService) : IRequestHandler<VerifyEmailCommand, string>
+    public record VerifyEmailCommand(string Token) : IRequest<bool>;
+    public class VerifyEmailCommandHandler(IUserRepository userRepository, ITokenService tokenService) : IRequestHandler<VerifyEmailCommand, bool>
     {
-        public async Task<string> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
         {
-            var isValid = tokenService.ValidateEmailToken(request.token, out var email);
-            var user = await userRepository.GetUserByEmailAsync(email);
-            if (user == null)
+            var isValid = tokenService.ValidateEmailToken(request.Token, out var email);
+            if (string.IsNullOrEmpty(email))
             {
-                throw new KeyNotFoundException("User not found.");
+                throw new UnauthorizedAccessException("Invalid or expired token.");
             }
+
+            var user = await userRepository.GetUserByEmailAsync(email) 
+                ?? throw new UnauthorizedAccessException("User not found.");
+
             user.IsValidEmail = true;
             user.UpdatedAt = DateTime.UtcNow;
             await userRepository.UpdateUserAsync(user);
-            return email;
+            return isValid;
         }
     }
 }

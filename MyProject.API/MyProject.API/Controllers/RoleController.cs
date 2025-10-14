@@ -7,7 +7,7 @@ using MyProject.Application.Features.Role.Commands.Delete;
 using MyProject.Application.Features.Role.Commands.Update;
 using MyProject.Application.Features.Role.DTO;
 using MyProject.Application.Features.Role.Queries;
-using MyProject.Core.Entities;
+using MyProject.Core.Enum;
 
 namespace MyProject.API.Controllers
 {

@@ -37,7 +37,7 @@
             {
                 Code = code,
                 Message = message,
-                Data = default,
+                Data = default!,
                 Success = false
             };
         }
