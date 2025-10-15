@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using MyProject.Application.Interface;
 
-namespace MyProject.Application.Features.Auth.Command.FogotPassword
+namespace MyProject.Application.Features.Auth.Command.ForgotPassword
 {
-    public record SendOtpCommand(string data): IRequest<bool>;
+    public record SendOtpCommand(string Email): IRequest<bool>;
     public class SendOtpCommandHandler(
         IOtpService otpService,
         IEmailService emailService
@@ -11,10 +11,10 @@ namespace MyProject.Application.Features.Auth.Command.FogotPassword
     {
         public async Task<bool> Handle(SendOtpCommand request, CancellationToken cancellationToken)
         {
-            var otp = await otpService.GenerateOtpAsync(request.data);
+            var otp = await otpService.GenerateOtpAsync(request.Email);
             var subject = "Reset Password by MyApp";
             var body = $"Your Otp reset is {otp}";
-            return await emailService.SendEmailAsync(request.data, subject, body);
+            return await emailService.SendEmailAsync(request.Email, subject, body);
         }
     }
 }

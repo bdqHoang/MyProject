@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using MyProject.Application.Features.Role.Commands.Create;
+using MyProject.Application.Features.Role.Commands.Update;
 using MyProject.Application.Features.Role.DTO;
 using MyProject.Core.Entities;
 using System;
@@ -14,12 +16,12 @@ namespace MyProject.Application.Common.Mappings
         public RoleProfile() {
             #region create role
             // map from DTO to Entity Role Request
-            CreateMap<CreateRoleReq, Roles>();
+            CreateMap<CreateRoleCommand, Roles>();
             #endregion
 
             #region update role
             // update role
-            CreateMap<UpdateRoleReq, Roles>();
+            CreateMap<UpdateRoleCommand, Roles>();
             #endregion
 
             #region role detail

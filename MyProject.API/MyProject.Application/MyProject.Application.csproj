@@ -22,4 +22,8 @@
     <ProjectReference Include="..\MyProject.Core\MyProject.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Message\Command\" />
+  </ItemGroup>
+
 </Project>

@@ -6,7 +6,15 @@ using MyProject.Core.Entities;
 
 namespace MyProject.Application.Features.User.Commands.Update
 {
-    public record UpdateUserCommand(Guid Id, UpdateUserReq data) : IRequest<UserDetailRes>;
+    public record UpdateUserCommand : IRequest<UserDetailRes>
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = null!;
+        public string Phone { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public Guid RoleId { get; set; }
+        public string Avatar { get; set; } = null!;
+    };
     public class UpdateUserCommandHandler(
         IUserRepository _userRepository,
         IMapper _mapper
@@ -14,20 +22,18 @@ namespace MyProject.Application.Features.User.Commands.Update
     {
         public async Task<UserDetailRes> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            var userDetail = await _userRepository.GetUserByIdAsync(request.Id);
-            if (userDetail == null)
+            var existsUser = await _userRepository.GetUserByIdAsync(request.Id);
+            if (existsUser == null)
             {
                 throw new KeyNotFoundException("User not found");
             }
-            var user = new Users();
-             _mapper.Map(user, userDetail);
 
-            _mapper.Map(request.data, user);
-            user.UpdatedAt = DateTime.UtcNow;
+            _mapper.Map(request, existsUser);
+            existsUser.UpdatedAt = DateTime.UtcNow;
 
-            await _userRepository.UpdateUserAsync(user);
+            await _userRepository.UpdateUserAsync(existsUser);
 
-            return _mapper.Map<UserDetailRes>(user);
+            return _mapper.Map<UserDetailRes>(existsUser);
         }
     }
 }

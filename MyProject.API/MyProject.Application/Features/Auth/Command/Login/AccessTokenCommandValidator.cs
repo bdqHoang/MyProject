@@ -1,20 +1,14 @@
 ﻿using FluentValidation;
-using MyProject.Application.Features.Auth.Command.Login;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MyProject.Application.Features.Auth.Command.Loggin
+namespace MyProject.Application.Features.Auth.Command.Login
 {
     public class AccessTokenCommandValidator : AbstractValidator<AccessTokenCommand>
     {
         public AccessTokenCommandValidator() {
-            RuleFor(x => x.Data.Email)
+            RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is require")
                 .EmailAddress();
-            RuleFor(x => x.Data.Password)
+            RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Passwork is require");
         }
     }

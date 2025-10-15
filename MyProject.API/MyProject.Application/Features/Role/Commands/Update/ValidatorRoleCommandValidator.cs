@@ -11,10 +11,10 @@ namespace MyProject.Application.Features.Role.Commands.Update
     {
         public ValidatorRoleCommandValidator()
         {
-            RuleFor(x => x.data.Name)
+            RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Role name is required.")
                 .MaximumLength(100).WithMessage("Role name must not exceed 100 characters.");
-            RuleFor(x => x.data.Description)
+            RuleFor(x => x.Description)
                 .MaximumLength(250).WithMessage("Description must not exceed 250 characters.");
         }
     }

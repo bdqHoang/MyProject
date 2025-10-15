@@ -6,7 +6,7 @@ using MyProject.Application.Interface;
 
 namespace MyProject.Application.Features.Auth.Command.Login
 {
-    public record RefreshTokenCommand(string data) : IRequest<LoginRes>;
+    public record RefreshTokenCommand(string Data) : IRequest<LoginRes>;
     public class RefreshTokenCommandHandler(
         IUserRepository _userRepository,
         ITokenService _tokenService,
@@ -15,7 +15,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
     {
         public async Task<LoginRes> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetUserByRefreshTokenAsync(request.data);
+            var user = await _userRepository.GetUserByRefreshTokenAsync(request.Data);
             if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
                 throw new UnauthorizedAccessException("Invalid refresh token");

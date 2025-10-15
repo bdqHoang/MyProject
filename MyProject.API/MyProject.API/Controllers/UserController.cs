@@ -30,9 +30,8 @@ namespace MyProject.API.Controllers
         [Authorize(Roles = $"{RoleName.Admin},{RoleName.Manager}")]
         [ProducesResponseType(typeof(ApiResponse<UserDetailRes>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddUserAsync([FromBody] CreateUserReq user)
+        public async Task<IActionResult> AddUserAsync([FromBody] CreateUserCommand command)
         {
-            var command = new CreateUserCommand(user);
             var userId = await sender.Send(command);
 
             // retrurn full dto
@@ -54,7 +53,7 @@ namespace MyProject.API.Controllers
         [Authorize(Roles = $"{RoleName.Admin},{RoleName.Manager}")]
         [ProducesResponseType(typeof(ApiResponse<UserDetailRes>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetUserByIdAsync(Guid id)
+        public async Task<IActionResult> GetUserByIdAsync([FromRoute] Guid id)
         {
             var query = new GetUserByIdQuery(id);
             var result = await sender.Send(query);
@@ -86,7 +85,7 @@ namespace MyProject.API.Controllers
         [Authorize(Roles = $"{RoleName.Admin},{RoleName.Manager}")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteUserAsync(Guid id)
+        public async Task<IActionResult> DeleteUserAsync([FromRoute] Guid id)
         {
             var command = new DeleteUserCommand(id);
             var result = await sender.Send(command);
@@ -102,9 +101,8 @@ namespace MyProject.API.Controllers
         [Authorize(Roles = $"{RoleName.Admin},{RoleName.Manager}")]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteRangeUserAsync([FromBody] List<Guid> lstId)
+        public async Task<IActionResult> DeleteRangeUserAsync([FromBody] RemoveRangeUserCommand command)
         {
-            var command = new RemoveRangeUserCommand(lstId);
             var result = await sender.Send(command);
             return Ok(ApiResponse<bool>.SuccessResponse(result, "User deleted successfully"));
         }
@@ -116,13 +114,11 @@ namespace MyProject.API.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("{id:guid}")]
         [Authorize(Roles = $"{RoleName.Admin},{RoleName.Manager}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateUserAsync(Guid id, [FromBody] UpdateUserReq user)
+        public async Task<IActionResult> UpdateUserAsync([FromBody] UpdateUserCommand command)
         {
-            var command = new UpdateUserCommand(id, user);
             var _ = await sender.Send(command);
             return NoContent();
         }

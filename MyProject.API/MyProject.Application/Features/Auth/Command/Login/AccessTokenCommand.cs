@@ -8,7 +8,12 @@ using MyProject.Core.Entities;
 
 namespace MyProject.Application.Features.Auth.Command.Login
 {
-    public record AccessTokenCommand(LoginReq Data) : IRequest<LoginRes>;
+    public record AccessTokenCommand : IRequest<LoginRes>
+    {
+        public string Email { get; set; } = null!;
+        public string Password { get; set; } = null!;
+
+    };
     public class AccessTokenCommandHandler(
         IUserRepository _userRepostitory,
         IPasswordHasher<Users> _passwordHasher,
@@ -20,7 +25,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
         public async Task<LoginRes> Handle(AccessTokenCommand request, CancellationToken cancellationToken)
         {
 
-            var user = await _userRepostitory.GetUserByEmailAsync(request.Data.Email) ?? throw new UnauthorizedAccessException("Invalid Email or Password");
+            var user = await _userRepostitory.GetUserByEmailAsync(request.Email) ?? throw new UnauthorizedAccessException("Invalid Email or Password");
 
             if (!user.Status)
             {
@@ -28,7 +33,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
             }
 
             // verify passwork
-            var result = _passwordHasher.VerifyHashedPassword(user, user.Password, request.Data.Password);
+            var result = _passwordHasher.VerifyHashedPassword(user, user.Password, request.Password);
 
             if (result == PasswordVerificationResult.Failed)
             {

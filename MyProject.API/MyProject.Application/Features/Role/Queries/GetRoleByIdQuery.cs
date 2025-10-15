@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MyProject.Application.Features.Role.Queries
 {
-    public record GetRoleByIdQuery(Guid data) : IRequest<RoleDetailRes>;
+    public record GetRoleByIdQuery(Guid RoleId) : IRequest<RoleDetailRes>;
     public class GetRoleByIdQueryHandler(
         IRoleRepository _roleRepository,
         IMapper _mapper
@@ -18,7 +18,7 @@ namespace MyProject.Application.Features.Role.Queries
     {
         public async Task<RoleDetailRes> Handle(GetRoleByIdQuery request, CancellationToken cancellationToken)
         {
-            var role = await _roleRepository.GetRoleByIdAsync(request.data);
+            var role = await _roleRepository.GetRoleByIdAsync(request.RoleId);
             if (role == null)
             {
                 throw new KeyNotFoundException("Role not found");

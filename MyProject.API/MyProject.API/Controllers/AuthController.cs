@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyProject.API.Common;
-using MyProject.Application.Features.Auth.Command.FogotPassword;
-using MyProject.Application.Features.Auth.Command.Loggin;
+using MyProject.Application.Features.Auth.Command.ForgotPassword;
 using MyProject.Application.Features.Auth.Command.Login;
 using MyProject.Application.Features.Auth.Command.Register;
 using MyProject.Application.Features.Auth.DTO;
@@ -12,7 +11,6 @@ using MyProject.Application.Features.User.Queries;
 using MyProject.Application.Interface;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography.Xml;
 
 namespace MyProject.API.Controllers
 {
@@ -32,9 +30,8 @@ namespace MyProject.API.Controllers
         [Route("Login")]
         [ProducesResponseType(typeof(LoginRes), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Login([FromBody] LoginReq login)
+        public async Task<IActionResult> Login([FromBody] AccessTokenCommand command)
         {
-            var command = new AccessTokenCommand(login);
             var result = await sender.Send(command);
             return Ok(ApiResponse<LoginRes>.SuccessResponse(result, "Login successfully"));
         }
@@ -48,9 +45,8 @@ namespace MyProject.API.Controllers
         [Route("Register")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Register([FromBody] RegisterReq registerReq)
+        public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
-            var command = new RegisterCommand(registerReq);
             var _= await sender.Send(command);
             return Ok(ApiResponse<bool>.SuccessResponse(true, "Register successfully"));
         }
@@ -121,9 +117,8 @@ namespace MyProject.API.Controllers
         [Route("refreshToken")]
         [ProducesResponseType(typeof(LoginRes), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
         {
-            var command = new RefreshTokenCommand(refreshToken);
             var result = await sender.Send(command);
             return Ok(ApiResponse<LoginRes>.SuccessResponse(result, "Refresh token successfully"));
         }
@@ -137,9 +132,8 @@ namespace MyProject.API.Controllers
         [Route("forgot-password")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        public async Task<IActionResult> ForgotPassword([FromBody] SendOtpCommand command)
         {
-            var command = new SendOtpCommand(email);
             var result = await sender.Send(command);
             return Ok(ApiResponse<bool>.SuccessResponse(result, "If the email is registered, please check otp in email"));
         }
@@ -153,9 +147,8 @@ namespace MyProject.API.Controllers
         [Route("verify-otp")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpReq req)
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpCommand command)
         {
-            var command = new VerifyOtpCommand(req);
             var result = await sender.Send(command);
             return Ok(ApiResponse<bool>.SuccessResponse(result, "Otp verify successfully"));
         }
@@ -169,9 +162,8 @@ namespace MyProject.API.Controllers
         [Route("reset-password")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordReq req)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
         {
-            var command = new ResetPasswordCommand(req);
             var result = await sender.Send(command);
             return Ok(ApiResponse<bool>.SuccessResponse(result, "Reset password successfully"));
         }

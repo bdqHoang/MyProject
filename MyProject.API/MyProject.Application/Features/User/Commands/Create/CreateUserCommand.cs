@@ -8,7 +8,15 @@ using MyProject.Core.Entities;
 
 namespace MyProject.Application.Features.User.Commands.Create
 {
-    public record CreateUserCommand(CreateUserReq data) : IRequest<Guid>;
+    public record CreateUserCommand : IRequest<Guid>
+    {
+        public string Name { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Password { get; set; } = null!;
+        public string Phone { get; set; } = null!;
+        public Guid RoleId { get; set; }
+        public string Avatar { get; set; } = null!;
+    };
 
     public class AddUserCommandHandler(
         IUserRepository _userRepository,
@@ -18,21 +26,21 @@ namespace MyProject.Application.Features.User.Commands.Create
     {
         public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            var existingUser = await _userRepository.GetUserByEmailAsync(request.data.Email);
+            var existingUser = await _userRepository.GetUserByEmailAsync(request.Email);
             if (existingUser != null)
             {
                 throw new ValidationException("Email already exists");
             }
 
-            existingUser = await _userRepository.GetUserByEmailAsync(request.data.Phone);
+            existingUser = await _userRepository.GetUserByEmailAsync(request.Phone);
             if (existingUser != null)
             {
                 throw new ValidationException("Email already exists");
             }
 
-            var user = _mapper.Map<Users>( request.data);
+            var user = _mapper.Map<Users>( request);
             user.Id = Guid.NewGuid();
-            user.Password = _passwordHasher.HashPassword(user,request.data.Password);
+            user.Password = _passwordHasher.HashPassword(user,request.Password);
             user.IsValidEmail = false;
             user.CreatedAt = DateTime.UtcNow;
             user.UpdatedAt = DateTime.UtcNow;

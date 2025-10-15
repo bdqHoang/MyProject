@@ -5,9 +5,14 @@ using MyProject.Application.Interface;
 using MyProject.Core.Entities;
 using System.Text;
 
-namespace MyProject.Application.Features.Auth.Command.FogotPassword
+namespace MyProject.Application.Features.Auth.Command.ForgotPassword
 {
-    public record ResetPasswordCommand(ResetPasswordReq data) : IRequest<bool>;
+    public record ResetPasswordCommand : IRequest<bool>
+    {
+        public string Email { get; set; } = null!;
+        public string NewPassword { get; set; } = null!;
+        public string ConfirmNewPassword { get; set; } = null!;
+    };
     public class ChangePasswordCommandHandler(
         IUserRepository userRepository,
         IRedisService redisService,
@@ -15,17 +20,15 @@ namespace MyProject.Application.Features.Auth.Command.FogotPassword
     {
         public async Task<bool> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            var key = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{request.data.Email}:verified"));
+            var key = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{request.Email}:verified"));
             var data = await redisService.GetAsync(key);
             if (string.IsNullOrEmpty(data))
             {
                 throw new UnauthorizedAccessException("OTP not verified or expired");
             }
 
-            var user = await userRepository.GetUserByEmailAsync(request.data.Email);
-            if (user == null) throw new UnauthorizedAccessException("User not found");
-
-            user.Password = passwordHaser.HashPassword(user, request.data.NewPassword);
+            var user = await userRepository.GetUserByEmailAsync(request.Email) ?? throw new UnauthorizedAccessException("User not found");
+            user.Password = passwordHaser.HashPassword(user, request.NewPassword);
             user.UpdatedAt = DateTime.UtcNow;
             await redisService.DeleteAsync(key);
             return await userRepository.UpdateUserAsync(user);

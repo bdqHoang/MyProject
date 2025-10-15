@@ -54,9 +54,8 @@ namespace MyProject.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<RoleDetailRes>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddRoleAsync([FromBody] CreateRoleReq userReq)
+        public async Task<IActionResult> AddRoleAsync([FromBody] CreateRoleCommand command)
         {
-            var command = new CreateRoleCommand(userReq);
             var roleId = await sender.Send(command);
 
             // return full dto
@@ -92,9 +91,8 @@ namespace MyProject.API.Controllers
         [HttpDelete]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteRangeRoleAsync([FromBody] IEnumerable<Guid> ids)
+        public async Task<IActionResult> DeleteRangeRoleAsync([FromBody] RemoveRangeRoleCommand command)
         {
-            var command = new RemoveRangeRoleCommand(ids);
             var result = await sender.Send(command);
             return Ok(ApiResponse<object>.SuccessResponse(result, "Roles deleted successfully"));
         }
@@ -106,12 +104,10 @@ namespace MyProject.API.Controllers
         /// <param name="updateRoleReq"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("{id:guid}")]
         [ProducesResponseType(typeof(ApiResponse<RoleDetailRes>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateRoleAsync([FromRoute] Guid id, [FromBody] UpdateRoleReq updateRoleReq)
+        public async Task<IActionResult> UpdateRoleAsync([FromBody] UpdateRoleCommand command)
         {
-            var command = new UpdateRoleCommand(id, updateRoleReq);
             var result = await sender.Send(command);
             return Ok(ApiResponse<RoleDetailRes>.SuccessResponse(result, "Role updated successfully"));
         }

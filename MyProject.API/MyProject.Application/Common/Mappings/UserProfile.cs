@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
-using MyProject.Application.Features.Auth.DTO;
+using MyProject.Application.Features.Auth.Command.Register;
+using MyProject.Application.Features.User.Commands.Create;
+using MyProject.Application.Features.User.Commands.Update;
 using MyProject.Application.Features.User.DTO;
 using MyProject.Core.Entities;
 
@@ -11,8 +13,8 @@ namespace MyProject.Application.Common.Mappings
         {
             #region User create
             // map from DTO to Entity User Request
-            CreateMap<CreateUserReq, Users>();
-            CreateMap<RegisterReq, Users>();
+            CreateMap<CreateUserCommand, Users>();
+            CreateMap<RegisterCommand, Users>();
             #endregion
 
             #region User detail
@@ -23,7 +25,7 @@ namespace MyProject.Application.Common.Mappings
 
             #region update user
             // map from DTO to Entity User Request
-            CreateMap<UpdateUserReq, Users>();
+            CreateMap<UpdateUserCommand, Users>();
             #endregion
         }
     }
