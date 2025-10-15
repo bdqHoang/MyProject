@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Options;
 using MyProject.Application.Common.Models;
 using MyProject.Application.Features.Auth.DTO;
-using MyProject.Application.Features.User.DTO;
 using MyProject.Application.Interface;
 
 namespace MyProject.Application.Features.Auth.Command.Login
@@ -11,9 +9,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
     public record RefreshTokenCommand(string data) : IRequest<LoginRes>;
     public class RefreshTokenCommandHandler(
         IUserRepository _userRepository,
-        IRoleRepository _roleRepository,
         ITokenService _tokenService,
-        IMapper _mapper,
         IOptions<JwtSettings> _jwtSettings
         ) : IRequestHandler<RefreshTokenCommand, LoginRes>
     {
@@ -25,9 +21,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
                 throw new UnauthorizedAccessException("Invalid refresh token");
             }
 
-            var userDto = _mapper.Map<UserDetailRes>(user);
-            userDto.RoleName = (await _roleRepository.GetRoleByIdAsync(userDto.Id)).Name;
-            var newAccessToken = _tokenService.GenerateAccessToken(userDto);
+            var newAccessToken = _tokenService.GenerateAccessToken(user);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
@@ -40,7 +34,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                Role = userDto.RoleName,
+                Role = user.Role.Name,
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.Value.ExpirationInMinutes)

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MyProject.Application.Common.Models;
-using MyProject.Application.Features.User.DTO;
 using MyProject.Application.Interface;
+using MyProject.Core.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -21,7 +21,7 @@ namespace MyProject.Infrastructure.Services
         /// <param name="user"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public string GenerateAccessToken(UserDetailRes user)
+        public string GenerateAccessToken(Users user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
@@ -30,7 +30,7 @@ namespace MyProject.Infrastructure.Services
                 new (ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new (ClaimTypes.Name, user.Name),
                 new (ClaimTypes.Email, user.Email),
-                new (ClaimTypes.Role, user.RoleName),
+                new (ClaimTypes.Role, user.Role.Name),
                 new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new (JwtRegisteredClaimNames.Sub, user.Id.ToString())
             };

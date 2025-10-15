@@ -5,8 +5,8 @@ namespace MyProject.Application.Interface
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<UserDetailRes>> GetAllUsersAsync();
-        Task<UserDetailRes> GetUserByIdAsync(Guid userId);
+        Task<IEnumerable<Users>> GetAllUsersAsync();
+        Task<Users> GetUserByIdAsync(Guid userId);
         Task<Users> GetUserByEmailAsync(string email);
         Task<Users> GetUserByPhoneAsync(string phone);
         Task<Users> GetUserByRefreshTokenAsync(string token);

@@ -13,26 +13,12 @@ namespace MyProject.Infrastructure.Repositories
         /// get all users from database
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<UserDetailRes>> GetAllUsersAsync()
+        public async Task<IEnumerable<Users>> GetAllUsersAsync()
         {
-            var result = await (from u in dbContext.Users
-                                join r in dbContext.Roles
-                                    on u.RoleId equals r.Id
-                                where u.Status == true
-                                select new UserDetailRes
-                                {
-                                    Id = u.Id,
-                                    Name = u.Name,
-                                    Email = u.Email,
-                                    RoleId = u.RoleId,
-                                    RoleName = r.Name,
-                                    Avatar = u.Avatar,
-                                    Phone = u.Phone,
-                                    IsValidEmail = u.IsValidEmail,
-                                    CreatedAt = u.CreatedAt,
-                                    UpdatedAt = u.UpdatedAt,
-                                    Status = u.Status
-                                }).ToListAsync();
+            var result = await dbContext.Users
+                .Include(u => u.Role)
+                .Where(u => u.Status == true)
+                .ToListAsync();
             return result;
         }
 
@@ -41,27 +27,10 @@ namespace MyProject.Infrastructure.Repositories
         /// </summary>
         /// <param name="userId"> Id user</param>
         /// <returns></returns>
-        public async Task<UserDetailRes> GetUserByIdAsync(Guid userId)
+        public async Task<Users> GetUserByIdAsync(Guid userId)
         {
-            var result = await (from u in dbContext.Users
-                                join r in dbContext.Roles
-                                    on u.RoleId equals r.Id
-                                where u.Status == true
-                                      && u.Id == userId
-                                select new UserDetailRes
-                                {
-                                    Id = u.Id,
-                                    Name = u.Name,
-                                    Email = u.Email,
-                                    RoleId = u.RoleId,
-                                    RoleName = r.Name,
-                                    Avatar = u.Avatar,
-                                    Phone = u.Phone,
-                                    IsValidEmail = u.IsValidEmail,
-                                    CreatedAt = u.CreatedAt,
-                                    UpdatedAt = u.UpdatedAt,
-                                    Status = u.Status
-                                }).FirstOrDefaultAsync();
+            var result = await dbContext.Users.Include(u => u.Role)
+                .Where(u=>u.Status && u.Id == userId).FirstOrDefaultAsync();
             return result!;
         }
 

@@ -1,4 +1,5 @@
 ﻿using MyProject.Application.Features.User.DTO;
+using MyProject.Core.Entities;
 
 namespace MyProject.Application.Interface
 {
@@ -7,7 +8,7 @@ namespace MyProject.Application.Interface
         /// <summary>
         /// Generate JWT access token from UserDetailViewModel
         /// </summary>
-        string GenerateAccessToken(UserDetailRes user);
+        string GenerateAccessToken(Users user);
 
         /// <summary>
         /// Generate refresh token

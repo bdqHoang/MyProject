@@ -52,6 +52,7 @@ namespace MyProject.API.Middlewares
                     StatusCodes.Status400BadRequest,
                     ApiResponse<object>.ErrorResponse(exception.Message, StatusCodes.Status400BadRequest)
                 ),
+
                 // 🔸 Invalid operation
                 InvalidOperationException => (
                     StatusCodes.Status400BadRequest,

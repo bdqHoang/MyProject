@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MyProject.Application.Common.Models;
@@ -7,9 +6,9 @@ using MyProject.Application.Features.Auth.DTO;
 using MyProject.Application.Interface;
 using MyProject.Core.Entities;
 
-namespace MyProject.Application.Features.Auth.Command.Loggin
+namespace MyProject.Application.Features.Auth.Command.Login
 {
-    public record AccessTokenCommand(LoginReq data) : IRequest<LoginRes>;
+    public record AccessTokenCommand(LoginReq Data) : IRequest<LoginRes>;
     public class AccessTokenCommandHandler(
         IUserRepository _userRepostitory,
         IPasswordHasher<Users> _passwordHasher,
@@ -21,11 +20,7 @@ namespace MyProject.Application.Features.Auth.Command.Loggin
         public async Task<LoginRes> Handle(AccessTokenCommand request, CancellationToken cancellationToken)
         {
 
-            var user = await _userRepostitory.GetUserByEmailAsync(request.data.Email);
-            if (user == null)
-            {
-                throw new UnauthorizedAccessException("Invalid Email or Password");
-            }
+            var user = await _userRepostitory.GetUserByEmailAsync(request.Data.Email) ?? throw new UnauthorizedAccessException("Invalid Email or Password");
 
             if (!user.Status)
             {
@@ -33,7 +28,7 @@ namespace MyProject.Application.Features.Auth.Command.Loggin
             }
 
             // verify passwork
-            var result = _passwordHasher.VerifyHashedPassword(user, user.Password, request.data.Password);
+            var result = _passwordHasher.VerifyHashedPassword(user, user.Password, request.Data.Password);
 
             if (result == PasswordVerificationResult.Failed)
             {
@@ -55,7 +50,7 @@ namespace MyProject.Application.Features.Auth.Command.Loggin
             // Get role user
             var userDetail = await _userRepostitory.GetUserByIdAsync(user.Id);
 
-            if (string.IsNullOrEmpty(userDetail.RoleName))
+            if (string.IsNullOrEmpty(userDetail.Role.Name))
             {
                 throw new UnauthorizedAccessException("User not role found");
             }
@@ -74,7 +69,7 @@ namespace MyProject.Application.Features.Auth.Command.Loggin
                 Id = userDetail.Id,
                 Email = userDetail.Email,
                 Name = userDetail.Name,
-                Role = userDetail.RoleName,
+                Role = userDetail.Role.Name,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.Value.ExpirationInMinutes)
