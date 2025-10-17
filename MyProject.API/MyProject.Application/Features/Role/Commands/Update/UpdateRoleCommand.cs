@@ -13,17 +13,18 @@ namespace MyProject.Application.Features.Role.Commands.Update
         public string Description { get; set; } = null!;
     };
     public class UpdateRoleCommandHandler(
-        IRoleRepository _roleRepository,
+        IUnitOfWork _unitOfWork,
         IMapper _mapper
         ) : IRequestHandler<UpdateRoleCommand, RoleDetailRes>
     {
         public async Task<RoleDetailRes> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
         {
-            var existingRole = await _roleRepository.GetRoleByIdAsync(request.Id) ?? throw new KeyNotFoundException("Role not found");
+            var existingRole = await _unitOfWork.RoleRepository.GetRoleByIdAsync(request.Id) ?? throw new KeyNotFoundException("Role not found");
             _mapper.Map(request,existingRole);
             existingRole.UpdatedAt = DateTime.UtcNow;
             
-            await _roleRepository.UpdateRoleAsync(existingRole);
+            _unitOfWork.RoleRepository.UpdateRole(existingRole);
+            await _unitOfWork.CommitAsync();
 
             return _mapper.Map<RoleDetailRes>(existingRole);
         }

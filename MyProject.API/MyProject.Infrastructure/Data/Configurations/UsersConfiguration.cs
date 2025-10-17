@@ -8,7 +8,7 @@ namespace MyProject.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Users> builder)
         {
-            builder.ToTable("users");
+            builder.ToTable("Users");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).IsRequired().HasMaxLength(100);
             builder.Property(x => x.Email).IsRequired().HasMaxLength(100);
@@ -23,7 +23,6 @@ namespace MyProject.Infrastructure.Data.Configurations
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.UpdatedAt).IsRequired();
             builder.Property(x => x.Status).IsRequired();
-            builder.HasKey(x => x.Id);
             builder.HasIndex(x => x.Email).IsUnique();
             builder.HasIndex(x => x.Phone).IsUnique();
 

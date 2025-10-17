@@ -7,13 +7,13 @@ namespace MyProject.Application.Features.User.Queries
 {
     public record GetAllUserQuery() : IRequest<IEnumerable<UserDetailRes>>;
     public class GetAllUserQueryHandler(
-        IUserRepository _userRepository,
+        IUnitOfWork _unitOfWork,
         IMapper _mapper
         ) : IRequestHandler<GetAllUserQuery, IEnumerable<UserDetailRes>>
     {
         public async Task<IEnumerable<UserDetailRes>> Handle(GetAllUserQuery request, CancellationToken cancellationToken)
         {
-            var users = await _userRepository.GetAllUsersAsync();
+            var users = await _unitOfWork.UserRepository.GetAllUsersAsync();
                 
 
             return _mapper.Map<IEnumerable<UserDetailRes>>(users);

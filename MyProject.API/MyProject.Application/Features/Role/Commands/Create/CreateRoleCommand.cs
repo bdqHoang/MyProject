@@ -12,7 +12,7 @@ namespace MyProject.Application.Features.Role.Commands.Create
         public string Description { get; set; } = null!;
     };
     public class CreateRoleCommandHandler(
-        IRoleRepository _roleRepository,
+        IUnitOfWork _unitOfWork,
         IMapper _mapper) : IRequestHandler<CreateRoleCommand, Guid>
     {
         public async Task<Guid> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
@@ -23,7 +23,9 @@ namespace MyProject.Application.Features.Role.Commands.Create
             role.UpdatedAt = DateTime.UtcNow;
             role.Status = true;
 
-            return await _roleRepository.AddRoleAsync(role);
+            await _unitOfWork.RoleRepository.AddRoleAsync(role);
+            await _unitOfWork.CommitAsync();
+            return role.Id;
         }
     }
 }

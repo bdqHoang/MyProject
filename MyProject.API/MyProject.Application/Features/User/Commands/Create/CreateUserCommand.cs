@@ -2,7 +2,6 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using MyProject.Application.Features.User.DTO;
 using MyProject.Application.Interface;
 using MyProject.Core.Entities;
 
@@ -19,36 +18,37 @@ namespace MyProject.Application.Features.User.Commands.Create
     };
 
     public class AddUserCommandHandler(
-        IUserRepository _userRepository,
+        IUnitOfWork _unitOfWork,
         IPasswordHasher<Users> _passwordHasher,
         IMapper _mapper
         ) : IRequestHandler<CreateUserCommand, Guid>
     {
         public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            var existingUser = await _userRepository.GetUserByEmailAsync(request.Email);
+            var existingUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(request.Email);
             if (existingUser != null)
             {
                 throw new ValidationException("Email already exists");
             }
 
-            existingUser = await _userRepository.GetUserByEmailAsync(request.Phone);
+            existingUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(request.Phone);
             if (existingUser != null)
             {
                 throw new ValidationException("Email already exists");
             }
 
-            var user = _mapper.Map<Users>( request);
+            var user = _mapper.Map<Users>(request);
             user.Id = Guid.NewGuid();
-            user.Password = _passwordHasher.HashPassword(user,request.Password);
+            user.Password = _passwordHasher.HashPassword(user, request.Password);
             user.IsValidEmail = false;
             user.CreatedAt = DateTime.UtcNow;
             user.UpdatedAt = DateTime.UtcNow;
             user.Status = true;
 
-            var res = await _userRepository.AddUserAsync(user);
+            await _unitOfWork.UserRepository.AddUserAsync(user);
+            await _unitOfWork.CommitAsync();
 
-            return res;
+            return user.Id;
         }
     }
 }

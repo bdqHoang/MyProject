@@ -5,18 +5,20 @@ namespace MyProject.Application.Features.Role.Commands.Delete
 {
     public record RemoveRangeRoleCommand(IEnumerable<Guid> data) : IRequest<bool>;
     public class RemoveRangeRoleCommandHandler(
-        IRoleRepository _roleRepository
+        IUnitOfWork _unitOfWork
         ) : IRequestHandler<RemoveRangeRoleCommand, bool>
     {
         public async Task<bool> Handle(RemoveRangeRoleCommand request, CancellationToken cancellationToken)
         {
-            var lstRole = await _roleRepository.GetAllRolesAsync();
+            var lstRole = await _unitOfWork.RoleRepository.GetAllRolesAsync();
             var rolesToRemove = lstRole.Where(r => request.data.Contains(r.Id)).ToList();
             if (!rolesToRemove.Any())
             {
                 throw new KeyNotFoundException("No roles found for the provided IDs.");
             }
-            return await _roleRepository.RemoveRangeRoleAsync(rolesToRemove);
+            _unitOfWork.RoleRepository.RemoveRangeRole(rolesToRemove);
+            await _unitOfWork.CommitAsync();
+            return true;
         }
     }
 }

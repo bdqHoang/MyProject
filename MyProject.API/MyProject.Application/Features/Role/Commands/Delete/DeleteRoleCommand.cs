@@ -10,11 +10,13 @@ using System.Threading.Tasks;
 namespace MyProject.Application.Features.Role.Commands.Delete
 {
     public record DeleteRoleCommand(Guid Id): IRequest<bool>;
-    public class DeleteRoleCommandHandler(IRoleRepository _roleRepository) : IRequestHandler<DeleteRoleCommand, bool>
+    public class DeleteRoleCommandHandler(IUnitOfWork _unitOfWork) : IRequestHandler<DeleteRoleCommand, bool>
     {
         public async Task<bool> Handle(DeleteRoleCommand request, CancellationToken cancellationToken)
         {
-            return await _roleRepository.DeleteRoleAsync(request.Id);
+            await _unitOfWork.RoleRepository.DeleteRoleAsync(request.Id);
+            await _unitOfWork.CommitAsync();
+            return true;
         }
     }
 }

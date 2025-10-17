@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 namespace MyProject.Application.Features.User.Queries
 {
     public record GetUserByPhoneQuery(string data): IRequest<Users>;
-    public class GetUserByPhoneQueryHandler(IUserRepository _userRepository) : IRequestHandler<GetUserByPhoneQuery, Users>
+    public class GetUserByPhoneQueryHandler(IUnitOfWork _unitOfWork) : IRequestHandler<GetUserByPhoneQuery, Users>
     {
         public Task<Users> Handle(GetUserByPhoneQuery request, CancellationToken cancellationToken)
         {
-            return _userRepository.GetUserByPhoneAsync(request.data);
+            return _unitOfWork.UserRepository.GetUserByPhoneAsync(request.data);
         }
     }
 }

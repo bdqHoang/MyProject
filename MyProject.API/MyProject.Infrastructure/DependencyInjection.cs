@@ -34,7 +34,8 @@ namespace MyProject.Infrastructure
             .AddScoped<ITokenService, TokenService>()
             .AddScoped<IRedisService, RedisService>()
             .AddScoped<IEmailService, EmailService>()
-            .AddScoped<IOtpService, OtpService>();
+            .AddScoped<IOtpService, OtpService>()
+            .AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }

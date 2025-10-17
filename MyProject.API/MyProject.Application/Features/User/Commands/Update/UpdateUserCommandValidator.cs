@@ -5,12 +5,10 @@ namespace MyProject.Application.Features.User.Commands.Update
 {
     public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
-        public UpdateUserCommandValidator(IUserRepository userRepository, IRoleRepository roleRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public UpdateUserCommandValidator(IUnitOfWork unitOfWork)
         {
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
+            _unitOfWork = unitOfWork;
 
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required")
@@ -21,7 +19,7 @@ namespace MyProject.Application.Features.User.Commands.Update
                 .EmailAddress().WithMessage("Invalid email format")
                 .MustAsync(async (command,email, cancellation) =>
                 {
-                    var user = await _userRepository.GetUserByEmailAsync(email);
+                    var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
                     if (user == null || user.Id == command.Id)
                     {
                         return true;
@@ -36,7 +34,7 @@ namespace MyProject.Application.Features.User.Commands.Update
                 .WithMessage("'{PropertyName}' must be a valid phone number.")
                 .MustAsync(async (command, phone, cancellation) =>
                 {
-                    var user = await _userRepository.GetUserByPhoneAsync(phone);
+                    var user = await _unitOfWork.UserRepository.GetUserByPhoneAsync(phone);
                     if (user == null || user.Id == command.Id)
                     {
                         return true;
@@ -49,7 +47,7 @@ namespace MyProject.Application.Features.User.Commands.Update
 
             RuleFor(x => x.RoleId)
                 .NotEmpty().WithMessage("Role is required")
-                .MustAsync(async (roleId, cancellation) => (await _roleRepository.GetRoleByIdAsync(roleId)) != null).WithMessage("Role invalid");
+                .MustAsync(async (roleId, cancellation) => (await _unitOfWork.RoleRepository.GetRoleByIdAsync(roleId)) != null).WithMessage("Role invalid");
         }
     }
 }

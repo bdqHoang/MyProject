@@ -12,13 +12,13 @@ namespace MyProject.Application.Features.User.Queries
 {
     public record GetUserByIdQuery(Guid Id) : IRequest<UserDetailRes>;
     public class GetUserByIdQueryHandler(
-        IUserRepository userRepository,
+        IUnitOfWork _unitOfWork,
         IMapper _mapper
         ) : IRequestHandler<GetUserByIdQuery, UserDetailRes>
     {
         public async Task<UserDetailRes> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByIdAsync(request.Id);
+            var user = await _unitOfWork.UserRepository.GetUserByIdAsync(request.Id);
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found");

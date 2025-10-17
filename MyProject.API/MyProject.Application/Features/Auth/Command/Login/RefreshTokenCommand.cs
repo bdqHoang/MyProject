@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using Microsoft.Extensions.Options;
 using MyProject.Application.Common.Models;
 using MyProject.Application.Features.Auth.DTO;
@@ -8,14 +9,15 @@ namespace MyProject.Application.Features.Auth.Command.Login
 {
     public record RefreshTokenCommand(string Data) : IRequest<LoginRes>;
     public class RefreshTokenCommandHandler(
-        IUserRepository _userRepository,
+        IUnitOfWork _unitOfWork,
         ITokenService _tokenService,
-        IOptions<JwtSettings> _jwtSettings
+        IOptions<JwtSettings> _jwtSettings,
+        IMapper _mapper
         ) : IRequestHandler<RefreshTokenCommand, LoginRes>
     {
         public async Task<LoginRes> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetUserByRefreshTokenAsync(request.Data);
+            var user = await _unitOfWork.UserRepository.GetUserByRefreshTokenAsync(request.Data);
             if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
                 throw new UnauthorizedAccessException("Invalid refresh token");
@@ -27,18 +29,15 @@ namespace MyProject.Application.Features.Auth.Command.Login
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.Value.RefreshTokenExpirationInDays);
             user.UpdatedAt = DateTime.UtcNow;
-            await _userRepository.UpdateUserAsync(user);
+            _unitOfWork.UserRepository.UpdateUser(user);
+            await _unitOfWork.CommitAsync();
 
-            return new LoginRes
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.Role.Name,
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.Value.ExpirationInMinutes)
-            };
+            var logginRes = _mapper.Map<LoginRes>(user);
+            logginRes.AccessToken = newAccessToken;
+            logginRes.RefreshToken = newRefreshToken;
+            logginRes.ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.Value.ExpirationInMinutes);
+
+            return logginRes;
         }
     }
 }

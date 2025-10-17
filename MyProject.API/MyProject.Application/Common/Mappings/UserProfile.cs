@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MyProject.Application.Features.Auth.Command.Register;
+using MyProject.Application.Features.Auth.DTO;
 using MyProject.Application.Features.User.Commands.Create;
 using MyProject.Application.Features.User.Commands.Update;
 using MyProject.Application.Features.User.DTO;
@@ -21,6 +22,7 @@ namespace MyProject.Application.Common.Mappings
             // map from Entity to DTO User detail Response
             CreateMap<Users, UserDetailRes>();
             CreateMap<UserDetailRes,Users>();
+            CreateMap<LoginRes, Users>();
             #endregion
 
             #region update user

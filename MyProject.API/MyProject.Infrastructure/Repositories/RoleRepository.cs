@@ -12,12 +12,9 @@ namespace MyProject.Infrastructure.Repositories
         /// </summary>
         /// <param name="role"></param>
         /// <returns></returns>
-        public async Task<Guid> AddRoleAsync(Roles role)
+        public async Task AddRoleAsync(Roles role)
         {
             await dbContext.Roles.AddAsync(role);
-            await dbContext.SaveChangesAsync();
-
-            return role.Id;
         }
 
         /// <summary>
@@ -25,12 +22,10 @@ namespace MyProject.Infrastructure.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<bool> DeleteRoleAsync(Guid id)
+        public async Task DeleteRoleAsync(Guid id)
         {
             var role = await this.GetRoleByIdAsync(id);
             dbContext.Roles.Remove(role);
-
-            return await dbContext.SaveChangesAsync() > 0;
         }
 
         /// <summary>
@@ -69,10 +64,9 @@ namespace MyProject.Infrastructure.Repositories
         /// </summary>
         /// <param name="role"></param>
         /// <returns></returns>
-        public async Task UpdateRoleAsync(Roles role)
+        public  void UpdateRole(Roles role)
         {
             dbContext.Roles.Update(role);
-            await dbContext.SaveChangesAsync();
         }
 
         /// <summary>
@@ -81,10 +75,9 @@ namespace MyProject.Infrastructure.Repositories
         /// <param name="roles"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<bool> RemoveRangeRoleAsync(IEnumerable<Roles> roles)
+        public void RemoveRangeRole(IEnumerable<Roles> roles)
         {
             dbContext.Roles.RemoveRange(roles);
-            return await dbContext.SaveChangesAsync() > 0;
         }
     }
 }

@@ -10,9 +10,9 @@ namespace MyProject.Application.Interface
         Task<Users> GetUserByEmailAsync(string email);
         Task<Users> GetUserByPhoneAsync(string phone);
         Task<Users> GetUserByRefreshTokenAsync(string token);
-        Task<Guid> AddUserAsync(Users user);
-        Task<bool> UpdateUserAsync(Users user);
-        Task<bool> DeleteUserAsync(Guid userId);
-        Task<bool> RemoveRangeUserAsync(IEnumerable<Guid> usersId);
+        Task AddUserAsync(Users user);
+        void UpdateUser(Users user);
+        Task DeleteUserAsync(Guid userId);
+        Task RemoveRangeUserAsync(IEnumerable<Guid> usersId);
     }
 }

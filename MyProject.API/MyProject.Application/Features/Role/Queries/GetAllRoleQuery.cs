@@ -12,13 +12,13 @@ namespace MyProject.Application.Features.Role.Queries
 {
     public record GetAllRoleQuery() : IRequest<IEnumerable<RoleDetailRes>>;
     public class GetAllRoleQueryHandler(
-        IRoleRepository _roleRepository,
+        IUnitOfWork _unitOfWork,
         IMapper _mapper
         ) : IRequestHandler<GetAllRoleQuery, IEnumerable<RoleDetailRes>>
     {
         public async Task<IEnumerable<RoleDetailRes>> Handle(GetAllRoleQuery request, CancellationToken cancellationToken)
         {
-            var roles = await _roleRepository.GetAllRolesAsync();
+            var roles = await _unitOfWork.RoleRepository.GetAllRolesAsync();
             return _mapper.Map<IEnumerable<RoleDetailRes>>(roles);
         }
     }

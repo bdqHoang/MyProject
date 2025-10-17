@@ -2,7 +2,6 @@
 using MediatR;
 using MyProject.Application.Features.User.DTO;
 using MyProject.Application.Interface;
-using MyProject.Core.Entities;
 
 namespace MyProject.Application.Features.User.Commands.Update
 {
@@ -16,13 +15,13 @@ namespace MyProject.Application.Features.User.Commands.Update
         public string Avatar { get; set; } = null!;
     };
     public class UpdateUserCommandHandler(
-        IUserRepository _userRepository,
+        IUnitOfWork _unitOfWork,
         IMapper _mapper
         ) : IRequestHandler<UpdateUserCommand, UserDetailRes>
     {
         public async Task<UserDetailRes> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            var existsUser = await _userRepository.GetUserByIdAsync(request.Id);
+            var existsUser = await _unitOfWork.UserRepository.GetUserByIdAsync(request.Id);
             if (existsUser == null)
             {
                 throw new KeyNotFoundException("User not found");
@@ -31,7 +30,8 @@ namespace MyProject.Application.Features.User.Commands.Update
             _mapper.Map(request, existsUser);
             existsUser.UpdatedAt = DateTime.UtcNow;
 
-            await _userRepository.UpdateUserAsync(existsUser);
+            _unitOfWork.UserRepository.UpdateUser(existsUser);
+            await _unitOfWork.CommitAsync();
 
             return _mapper.Map<UserDetailRes>(existsUser);
         }

@@ -7,13 +7,13 @@ namespace MyProject.Application.Features.User.Queries
 {
     public record GetUserByEmailQuery(string data) : IRequest<UserDetailRes>;
     public class GetUserByEmailQueryHandler(
-        IUserRepository _userRepository,
+        IUnitOfWork _unitOfWork,
         IMapper _mapper
         ) : IRequestHandler<GetUserByEmailQuery, UserDetailRes>
     {
         public async Task<UserDetailRes> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
         {
-            var resutl = await _userRepository.GetUserByEmailAsync(request.data);
+            var resutl = await _unitOfWork.UserRepository.GetUserByEmailAsync(request.data);
 
             return _mapper.Map<UserDetailRes>(resutl);
         }

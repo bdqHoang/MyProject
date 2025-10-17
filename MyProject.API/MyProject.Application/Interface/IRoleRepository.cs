@@ -12,9 +12,9 @@ namespace MyProject.Application.Interface
         Task<IEnumerable<Roles>> GetAllRolesAsync();
         Task<Roles> GetRoleByIdAsync(Guid id);
         Task<Roles> GetRoleByNameAsync(string name);
-        Task<Guid> AddRoleAsync(Roles role);
-        Task UpdateRoleAsync(Roles role);
-        Task<bool> DeleteRoleAsync(Guid id);
-        Task<bool> RemoveRangeRoleAsync(IEnumerable<Roles> roles);
+        Task AddRoleAsync(Roles role);
+        void UpdateRole(Roles role);
+        Task DeleteRoleAsync(Guid id);
+        void RemoveRangeRole(IEnumerable<Roles> roles);
     }
 }

@@ -4,7 +4,7 @@ using MyProject.Application.Interface;
 namespace MyProject.Application.Features.User.Commands.Update
 {
     public record VerifyEmailCommand(string Token) : IRequest<bool>;
-    public class VerifyEmailCommandHandler(IUserRepository userRepository, ITokenService tokenService) : IRequestHandler<VerifyEmailCommand, bool>
+    public class VerifyEmailCommandHandler(IUnitOfWork _unitOfWork, ITokenService tokenService) : IRequestHandler<VerifyEmailCommand, bool>
     {
         public async Task<bool> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
         {
@@ -14,12 +14,14 @@ namespace MyProject.Application.Features.User.Commands.Update
                 throw new UnauthorizedAccessException("Invalid or expired token.");
             }
 
-            var user = await userRepository.GetUserByEmailAsync(email) 
+            var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email) 
                 ?? throw new UnauthorizedAccessException("User not found.");
 
             user.IsValidEmail = true;
             user.UpdatedAt = DateTime.UtcNow;
-            await userRepository.UpdateUserAsync(user);
+            _unitOfWork.UserRepository.UpdateUser(user);
+            await _unitOfWork.CommitAsync();
+
             return isValid;
         }
     }

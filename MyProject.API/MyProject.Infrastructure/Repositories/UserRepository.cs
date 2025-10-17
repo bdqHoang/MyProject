@@ -1,6 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.EntityFrameworkCore;
-using MyProject.Application.Features.User.DTO;
+﻿using Microsoft.EntityFrameworkCore;
 using MyProject.Application.Interface;
 using MyProject.Core.Entities;
 using MyProject.Infrastructure.Data;
@@ -44,13 +42,9 @@ namespace MyProject.Infrastructure.Repositories
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<Guid> AddUserAsync(Users user)
+        public async Task AddUserAsync(Users user)
         {
-
-            dbContext.Users.Add(user);
-            await dbContext.SaveChangesAsync();
-
-            return user.Id;
+            await dbContext.Users.AddAsync(user);
         }
 
         /// <summary>
@@ -58,11 +52,9 @@ namespace MyProject.Infrastructure.Repositories
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateUserAsync(Users user)
+        public void UpdateUser(Users user)
         {
             dbContext.Users.Update(user);
-
-            return await dbContext.SaveChangesAsync() > 0;
         }
 
         /// <summary>
@@ -70,11 +62,10 @@ namespace MyProject.Infrastructure.Repositories
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<bool> DeleteUserAsync(Guid id)
+        public async Task DeleteUserAsync(Guid id)
         {
             var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
             dbContext.Users.Remove(user!);
-            return await dbContext.SaveChangesAsync() > 0;
         }
 
         /// <summary>
@@ -83,11 +74,10 @@ namespace MyProject.Infrastructure.Repositories
         /// <param name="users"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<bool> RemoveRangeUserAsync(IEnumerable<Guid> usersId)
+        public async Task RemoveRangeUserAsync(IEnumerable<Guid> usersId)
         {
-            var lstUserRemove = dbContext.Users.Where(x => usersId.Contains(x.Id)).ToList();
+            var lstUserRemove = await dbContext.Users.Where(x => usersId.Contains(x.Id)).ToListAsync();
             dbContext.Users.RemoveRange(lstUserRemove);
-            return await dbContext.SaveChangesAsync() > 0;
         }
 
         public async Task<Users> GetUserByPhoneAsync(string phone)

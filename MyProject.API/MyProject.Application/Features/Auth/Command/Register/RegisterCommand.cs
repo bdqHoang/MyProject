@@ -18,8 +18,7 @@ namespace MyProject.Application.Features.Auth.Command.Register
         public string Avatar { get; set; } = null!;
     };
     public class RegisterCommandHandler(
-        IUserRepository _userRepository,
-        IRoleRepository _roleRepository,
+        IUnitOfWork _unitOfWork,
         IPasswordHasher<Users> _passwordHasher,
         IMapper _mapper
         ) : IRequestHandler<RegisterCommand, bool>
@@ -30,12 +29,13 @@ namespace MyProject.Application.Features.Auth.Command.Register
             user.Id = Guid.NewGuid();
             user.IsValidEmail = false;
             user.Password = _passwordHasher.HashPassword(user, request.Password);
-            user.RoleId = (await _roleRepository.GetRoleByNameAsync(RoleName.User)).Id;
+            user.RoleId = (await _unitOfWork.RoleRepository.GetRoleByNameAsync(RoleName.User)).Id;
             user.CreatedAt = DateTime.UtcNow;
             user.UpdatedAt = DateTime.UtcNow;
             user.Status = true;
 
-            await _userRepository.AddUserAsync(user);
+            await _unitOfWork.UserRepository.AddUserAsync(user);
+            await _unitOfWork.CommitAsync();
 
             return true;
         }

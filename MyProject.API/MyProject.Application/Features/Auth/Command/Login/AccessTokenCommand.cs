@@ -15,7 +15,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
 
     };
     public class AccessTokenCommandHandler(
-        IUserRepository _userRepostitory,
+        IUnitOfWork _unitOfWork,
         IPasswordHasher<Users> _passwordHasher,
         ITokenService _tokenService,
         IOptions<JwtSettings> _jwtSettings
@@ -25,7 +25,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
         public async Task<LoginRes> Handle(AccessTokenCommand request, CancellationToken cancellationToken)
         {
 
-            var user = await _userRepostitory.GetUserByEmailAsync(request.Email) ?? throw new UnauthorizedAccessException("Invalid Email or Password");
+            var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(request.Email) ?? throw new UnauthorizedAccessException("Invalid Email or Password");
 
             if (!user.Status)
             {
@@ -43,7 +43,8 @@ namespace MyProject.Application.Features.Auth.Command.Login
                 {
                     user.Status = false; // lock account
                 }
-                await _userRepostitory.UpdateUserAsync(user);
+                _unitOfWork.UserRepository.UpdateUser(user);
+                await _unitOfWork.CommitAsync();
                 throw new UnauthorizedAccessException($"Incorrect email or password. You still have {5 - user.RetryPassworkCount} attempts left.");
             }
 
@@ -53,7 +54,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
             }
 
             // Get role user
-            var userDetail = await _userRepostitory.GetUserByIdAsync(user.Id);
+            var userDetail = await _unitOfWork.UserRepository.GetUserByIdAsync(user.Id);
 
             if (string.IsNullOrEmpty(userDetail.Role.Name))
             {
@@ -67,7 +68,8 @@ namespace MyProject.Application.Features.Auth.Command.Login
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.Value.RefreshTokenExpirationInDays);
             user.UpdatedAt = DateTime.UtcNow;
-            await _userRepostitory.UpdateUserAsync(user);
+            _unitOfWork.UserRepository.UpdateUser(user);
+            await _unitOfWork.CommitAsync();
 
             return new LoginRes
             {

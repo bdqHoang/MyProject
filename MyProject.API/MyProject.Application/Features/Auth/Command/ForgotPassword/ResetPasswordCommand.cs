@@ -14,7 +14,7 @@ namespace MyProject.Application.Features.Auth.Command.ForgotPassword
         public string ConfirmNewPassword { get; set; } = null!;
     };
     public class ChangePasswordCommandHandler(
-        IUserRepository userRepository,
+        IUnitOfWork _unitOfWork,
         IRedisService redisService,
         IPasswordHasher<Users> passwordHaser) : IRequestHandler<ResetPasswordCommand, bool>
     {
@@ -27,11 +27,13 @@ namespace MyProject.Application.Features.Auth.Command.ForgotPassword
                 throw new UnauthorizedAccessException("OTP not verified or expired");
             }
 
-            var user = await userRepository.GetUserByEmailAsync(request.Email) ?? throw new UnauthorizedAccessException("User not found");
+            var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(request.Email) ?? throw new UnauthorizedAccessException("User not found");
             user.Password = passwordHaser.HashPassword(user, request.NewPassword);
             user.UpdatedAt = DateTime.UtcNow;
             await redisService.DeleteAsync(key);
-            return await userRepository.UpdateUserAsync(user);
+            _unitOfWork.UserRepository.UpdateUser(user);
+            await _unitOfWork.CommitAsync();
+            return true;
         }
     }
 }
