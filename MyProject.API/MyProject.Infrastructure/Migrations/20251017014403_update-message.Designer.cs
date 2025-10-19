@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyProject.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using MyProject.Infrastructure.Data;
 namespace MyProject.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251017014403_update-message")]
+    partial class updatemessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace MyProject.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MyProject.Core.Entities.ConversationParticipants", b =>
+            modelBuilder.Entity("MyProject.Core.Entities.ConversationDisplayName", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,7 +38,39 @@ namespace MyProject.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DisplayName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ConversationDisplayName", (string)null);
+                });
+
+            modelBuilder.Entity("MyProject.Core.Entities.ConversationParticipants", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsMuted")
                         .HasColumnType("bit");
@@ -326,6 +361,25 @@ namespace MyProject.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("MyProject.Core.Entities.ConversationDisplayName", b =>
+                {
+                    b.HasOne("MyProject.Core.Entities.Conversations", "Conversation")
+                        .WithOne("ConversationDisplayName")
+                        .HasForeignKey("MyProject.Core.Entities.ConversationDisplayName", "ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyProject.Core.Entities.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("MyProject.Core.Entities.ConversationParticipants", b =>
                 {
                     b.HasOne("MyProject.Core.Entities.Conversations", "Conversation")
@@ -383,6 +437,8 @@ namespace MyProject.Infrastructure.Migrations
 
             modelBuilder.Entity("MyProject.Core.Entities.Conversations", b =>
                 {
+                    b.Navigation("ConversationDisplayName");
+
                     b.Navigation("Messages");
 
                     b.Navigation("Participants");

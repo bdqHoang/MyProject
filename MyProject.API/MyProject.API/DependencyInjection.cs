@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyProject.API.Middlewares;
@@ -23,13 +25,28 @@ namespace MyProject.API
                     .AddProblemDetails()
                     .Configure<JwtSettings>(jwtSettingsSection);  // Bind cho IOptions
 
+            // signalR
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+                options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+            });
+
             // Gọi riêng các methods void hoặc special return
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", policy =>  // Có thể đổi tên thành "CorsPolicy" và restrict
-                    policy.AllowAnyOrigin()  // Production: .WithOrigins("https://example.com")
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
+                    policy.AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials()
+                          .SetIsOriginAllowed(_ => true));
+            });
+
+            services.AddResponseCompression(otps =>
+            {
+                otps.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
             });
 
             services.AddSwaggerGen(options =>
@@ -91,6 +108,22 @@ namespace MyProject.API
                     ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ClockSkew = TimeSpan.Zero
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+
+                        // chỉ lấy token cho các kết nối Hub
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/chat"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 };
             });
 

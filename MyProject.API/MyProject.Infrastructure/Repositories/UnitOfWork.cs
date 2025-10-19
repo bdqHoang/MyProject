@@ -8,14 +8,14 @@ namespace MyProject.Infrastructure.Repositories
         private readonly AppDbContext _context;
         public IUserRepository UserRepository { get; }
 
-        //public IMessageRepository MessageRepository { get; }
+        public IMessageRepository MessageRepository { get; }
         public IRoleRepository RoleRepository { get; }
 
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
             UserRepository = new UserRepository(context);
-            //MessageRepository = new MessageRepository(context);
+            MessageRepository = new MessageRepository(context);
             RoleRepository = new RoleRepository(context);
         }
 
@@ -31,6 +31,7 @@ namespace MyProject.Infrastructure.Repositories
 
         public async Task CommitTransactionAsync()
         {
+            await _context.SaveChangesAsync();
             await _context.Database.CommitTransactionAsync();
         }
 

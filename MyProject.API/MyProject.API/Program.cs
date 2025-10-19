@@ -1,4 +1,6 @@
-﻿using MyProject.API;
+﻿using Microsoft.AspNetCore.Builder;
+using MyProject.API;
+using MyProject.Application.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,5 +23,7 @@ app.UseTokenBlackList();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<ChatHup>("/hubs/chat");
 
 app.Run();

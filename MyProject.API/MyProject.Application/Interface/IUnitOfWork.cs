@@ -9,7 +9,7 @@ namespace MyProject.Application.Interface
     public interface IUnitOfWork : IDisposable
     {
         IUserRepository UserRepository { get; }
-        //IMessageRepository MessageRepository { get; }
+        IMessageRepository MessageRepository { get; }
         IRoleRepository RoleRepository { get; }
         Task<int> CommitAsync(CancellationToken ct = default);
         Task BeginTransactionAsync();
