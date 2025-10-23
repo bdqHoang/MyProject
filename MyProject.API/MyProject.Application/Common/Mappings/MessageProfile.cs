@@ -15,7 +15,8 @@ namespace MyProject.Application.Common.Mappings
         {
             CreateMap<MessageRes, Messages>();
             CreateMap<Messages, MessageRes>();
-            CreateMap<ConversationRes, Conversations>();
+            CreateMap<Conversations, ConversationRes>();
+            CreateMap<ConversationParticipants, ParticipantsRes>();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MyProject.Core.Enum;
+﻿using MyProject.Core.Entities;
+using MyProject.Core.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,6 @@ namespace MyProject.Application.Features.Message.DTO
         public ConversationType Type { get; set; } = ConversationType.Personal;
         public DateTime? LastMessageAt { get; set; }
         public int UnReadCount { get; set; }
-        public List<ParticipantsRes> Participants { get; set; } = new ();
+        public List<ConversationParticipants> Participants { get; set; } = new List<ConversationParticipants>();
     }
 }

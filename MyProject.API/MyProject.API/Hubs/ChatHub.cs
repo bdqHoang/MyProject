@@ -2,29 +2,36 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using MyProject.Application.Features.Message.Command.Create;
+using MyProject.Application.Features.Message.Command.Update;
+using MyProject.Application.Features.Message.DTO;
+using MyProject.Application.Features.Message.Queries;
 using MyProject.Application.Interface;
-using MyProject.Core.Entities;
 using MyProject.Core.Enum;
 using System.Security.Claims;
 
-namespace MyProject.Application.Hubs
+namespace MyProject.API.Hubs
 {
     [Authorize]
-    public class ChatHup(IMessageRepository messageRepository, ISender sender) : Hub
+    public class ChatHub(IUnitOfWork unitOfWork, ISender sender, IMessageQueueService messageQueueService) : Hub
     {
-        private string GetUserId() => Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
-        private string GetUserName() => Context.User.FindFirst(ClaimTypes.Name)?.Value!;
+        private string GetUserId() => Context.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        private string GetUserName() => Context.User!.FindFirst(ClaimTypes.Name)!.Value!;
         public override async Task OnConnectedAsync()
         {
             if (!string.IsNullOrEmpty(GetUserId()))
             {
+                // get user conversations
+                var query = new GetUserConversationsQuery
+                {
+                    UserId = Guid.Parse(GetUserId())
+                };
+
+                var result = await sender.Send(query);
+
                 // add their to a group based on their user ID
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"user_{GetUserId()}");
 
-                // get user conversations
-                var conversations = await messageRepository.GetUserConversationsAsync(Guid.Parse(GetUserId()));
-
-                foreach (var conversation in conversations)
+                foreach (var conversation in result)
                 {
                     await Groups.AddToGroupAsync(Context.ConnectionId, $"conversation_{conversation.Id}");
                 }
@@ -36,11 +43,17 @@ namespace MyProject.Application.Hubs
         {
             if (!string.IsNullOrEmpty(GetUserId()))
             {
+                // get user conversations
+                var query = new GetUserConversationsQuery
+                {
+                    UserId = Guid.Parse(GetUserId())
+                };
+
+                var result = await sender.Send(query);
                 // remove their to a group based on their user ID
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user_{GetUserId()}");
-                // get user conversations
-                var conversations = await messageRepository.GetUserConversationsAsync(Guid.Parse(GetUserId()));
-                foreach (var conversation in conversations)
+
+                foreach (var conversation in result)
                 {
                     await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"conversation_{conversation.Id}");
                 }
@@ -52,22 +65,26 @@ namespace MyProject.Application.Hubs
         /// send message
         /// </summary>
         /// <returns></returns>
-        public async Task SendMessage(Guid? conversationId, Guid reciverId ,string content, MessageType messageType = MessageType.Text)
+        public async Task SendMessage(Guid? conversationId, Guid reciverId, string content, MessageType messageType = MessageType.Text)
         {
             try
             {
-                var command = new SendMessageCommand
+                var queue = new QueuedMessageDto
                 {
                     ConversationId = conversationId,
                     ReciverId = reciverId,
                     Content = content,
-                    Type = (MessageType)messageType,
-                    SenderId = Guid.Parse(GetUserId())
+                    Type = messageType,
+                    SenderId = Guid.Parse(GetUserId()),
+                    QueueAt = DateTime.UtcNow,
+                    RetryCount = 0,
+                    Status  = MessageStatus.Pending
                 };
-                var result = await sender.Send(command);
+
+                await messageQueueService.PublishMessageAsync(queue);
 
                 // send to all participant in conversation
-                await Clients.Group($"conversation_{result.ConversationId}").SendAsync("ReceiveMessage", result);
+                await Clients.Caller.SendAsync("MessageQueued", queue);
 
 
             }
@@ -81,14 +98,25 @@ namespace MyProject.Application.Hubs
         {
             try
             {
-                var userId = Guid.Parse(GetUserId());
-                var isParticipant = await messageRepository.IsUserInConversationAsync(conversationId, userId);
+                var query = new IsUserInConversationQuery
+                {
+                    ConversationId = conversationId,
+                    UserId = Guid.Parse(GetUserId())
+                };
+                var isParticipant = await sender.Send(query);
                 if (!isParticipant)
                 {
                     await Clients.Caller.SendAsync("Error", "User are not  a participant in this conversation");
                     return;
                 }
-                await messageRepository.UpdateLastSeenAsync(conversationId, userId);
+
+                var markAsReadCommand = new MarkConversationAsReadCommand
+                {
+                    ConversationId = conversationId,
+                    UserId = Guid.Parse(GetUserId())
+                };
+                await sender.Send(markAsReadCommand);
+
                 await Clients.Caller.SendAsync("MarkedAsRead", conversationId);
             }
             catch (Exception ex)
@@ -111,11 +139,17 @@ namespace MyProject.Application.Hubs
         {
             var userId = Guid.Parse(GetUserId());
             // verify user in participant
-            var isParticipant = await messageRepository.IsUserInConversationAsync(conversationId, userId);
+            var query = new IsUserInConversationQuery
+            {
+                ConversationId = conversationId,
+                UserId = userId
+            };
+            var isParticipant = await sender.Send(query);
             if (isParticipant)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"conversation_{conversationId}");
-                await messageRepository.UpdateLastSeenAsync(conversationId, userId);
+                await unitOfWork.MessageRepository.UpdateLastSeenAsync(conversationId, userId);
+                await unitOfWork.CommitAsync();
             }
         }
 

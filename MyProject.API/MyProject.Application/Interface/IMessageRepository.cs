@@ -31,10 +31,10 @@ namespace MyProject.Application.Interface
         /// <summary>
         ///  mark a message as read by a user
         /// </summary>
-        /// <param name="messageId"></param>
+        /// <param name="conversationId"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task MarkMessageAsReadAsync(Guid messageId, Guid userId);
+        Task MarkMessageAsReadAsync(Guid conversationId, Guid userId);
 
         /// <summary>
         /// delete a message by id (only sender or admin can delete)

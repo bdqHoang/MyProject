@@ -195,9 +195,11 @@ namespace MyProject.Infrastructure.Repositories
         /// <param name="messageId"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task MarkMessageAsReadAsync(Guid messageId, Guid userId)
+        public async Task MarkMessageAsReadAsync(Guid conversationId, Guid userId)
         {
-            var message = await dbContext.Messages.FindAsync(messageId);
+            var messagelst = await dbContext.Messages.Where(x=> x.ConversationId == conversationId).ToListAsync();
+            var message = messagelst[messagelst.Count];
+
             if (message == null || message.SenderId == userId || !message.Status || message.ReadAt != null)
                 return;
             message.ReadAt = DateTime.UtcNow;

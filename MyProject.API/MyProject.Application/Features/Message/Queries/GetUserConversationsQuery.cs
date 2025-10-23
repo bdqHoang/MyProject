@@ -9,7 +9,7 @@ namespace MyProject.Application.Features.Message.Queries
     {
         public Guid UserId { get; set; }
         public int Page { get; set; } = 1;
-        public int PageSize { get; set; } = 50;
+        public int PageSize { get; set; } = 20;
     }
     public class GetUserConversationsQueryHandler(
         IMessageRepository messageRepository,

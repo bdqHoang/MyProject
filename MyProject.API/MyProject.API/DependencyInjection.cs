@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyProject.API.Middlewares;
+using MyProject.API.Worker;
 using MyProject.Application;
 using MyProject.Application.Common.Models;
 using MyProject.Infrastructure;
@@ -126,6 +127,7 @@ namespace MyProject.API
                     }
                 };
             });
+            services.AddHostedService<MessageProcessorWorker>();
 
             return services;
         }
