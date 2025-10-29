@@ -1,9 +1,18 @@
 ﻿using MediatR;
+using MemoryPack;
 using MyProject.Application.Interface;
+using MyProject.Application.Interface.Worker;
+using System.Text.Json.Serialization;
 
 namespace MyProject.Application.Features.Auth.Command.ForgotPassword
 {
-    public record SendOtpCommand(string Email): IRequest<bool>;
+    [MemoryPackable]
+    public partial record SendOtpCommand(string Email) : IRequest<bool>, IQueueableMessage
+    {
+        [JsonIgnore]
+        public string? StreamMessageId { get; set; }
+    }
+
     public class SendOtpCommandHandler(
         IOtpService otpService,
         IEmailService emailService

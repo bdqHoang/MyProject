@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
 using MediatR;
+using MemoryPack;
 using MyProject.Application.Features.Message.DTO;
 using MyProject.Application.Interface;
+using MyProject.Application.Interface.Worker;
 using MyProject.Core.Entities;
 using MyProject.Core.Enum;
 using System.Text.Json.Serialization;
 
 namespace MyProject.Application.Features.Message.Command.Create
 {
-    public record SendMessageCommand : IRequest<MessageRes>
+    [MemoryPackable]
+    public partial record SendMessageCommand : IRequest<MessageRes>, IQueueableMessage
     {
         public Guid? ConversationId { get; set; }
         public Guid? ParrentId { get; set; }
@@ -18,6 +21,8 @@ namespace MyProject.Application.Features.Message.Command.Create
 
         [JsonIgnore]
         public Guid SenderId { get; set; }
+        [JsonIgnore]
+        public string? StreamMessageId { get; set; }
     };
     public class SendMessageCommandHandler(
         IUnitOfWork _unitOfWork,

@@ -1,13 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MyProject.API.Extensions;
 using MyProject.API.Middlewares;
 using MyProject.API.Worker;
 using MyProject.Application;
 using MyProject.Application.Common.Models;
+using MyProject.Application.Features.Auth.Command.ForgotPassword;
+using MyProject.Application.Features.Message.Command.Create;
+using MyProject.Application.Interface;
+using MyProject.Application.Interface.Worker;
 using MyProject.Infrastructure;
+using MyProject.Infrastructure.Services;
 using System.Text;
 
 namespace MyProject.API
@@ -127,7 +132,17 @@ namespace MyProject.API
                     }
                 };
             });
-            services.AddHostedService<MessageProcessorWorker>();
+
+            // implement worker
+            services.AddSingleton(typeof(IMessageQueueService<>), typeof(RedisStreamQueueService<>));
+
+            // Handler cụ thể cho từng loại message
+            services.AddScoped<IMessageHandler<SendMessageCommand>, ChatMessageWorkerHandler>();
+            services.AddScoped<IMessageHandler<SendOtpCommand>, SendOtpWorkerHandler>();
+
+            // Worker xử lý background cho từng loại message
+            services.AddMessageWorker<SendMessageCommand>();
+            services.AddMessageWorker<SendOtpCommand>();
 
             return services;
         }

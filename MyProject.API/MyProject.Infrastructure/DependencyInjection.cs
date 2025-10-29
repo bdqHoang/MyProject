@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MyProject.Application.Features.Message.Command.Create;
+using MyProject.Application.Features.Message.DTO;
 using MyProject.Application.Interface;
 using MyProject.Infrastructure.Data;
 using MyProject.Infrastructure.Repositories;
@@ -37,7 +39,7 @@ namespace MyProject.Infrastructure
             .AddScoped<IOtpService, OtpService>()
             .AddScoped<IMessageRepository, MessageRepository>()
             .AddScoped<IUnitOfWork, UnitOfWork>()
-            .AddScoped<IMessageQueueService, RedisStreamQueueService>();
+            .AddScoped<IMessageQueueService<SendMessageCommand>, RedisStreamQueueService<SendMessageCommand>>();
 
             return services;
         }

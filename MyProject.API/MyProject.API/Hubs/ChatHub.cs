@@ -12,7 +12,7 @@ using System.Security.Claims;
 namespace MyProject.API.Hubs
 {
     [Authorize]
-    public class ChatHub(IUnitOfWork unitOfWork, ISender sender, IMessageQueueService messageQueueService) : Hub
+    public class ChatHub(IUnitOfWork unitOfWork, ISender sender, IMessageQueueService<SendMessageCommand> messageQueueService) : Hub
     {
         private string GetUserId() => Context.User!.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         private string GetUserName() => Context.User!.FindFirst(ClaimTypes.Name)!.Value!;
@@ -65,28 +65,15 @@ namespace MyProject.API.Hubs
         /// send message
         /// </summary>
         /// <returns></returns>
-        public async Task SendMessage(Guid? conversationId, Guid reciverId, string content, MessageType messageType = MessageType.Text)
+        public async Task SendMessage(SendMessageCommand command)
         {
             try
             {
-                var queue = new QueuedMessageDto
-                {
-                    ConversationId = conversationId,
-                    ReciverId = reciverId,
-                    Content = content,
-                    Type = messageType,
-                    SenderId = Guid.Parse(GetUserId()),
-                    QueueAt = DateTime.UtcNow,
-                    RetryCount = 0,
-                    Status  = MessageStatus.Pending
-                };
-
-                await messageQueueService.PublishMessageAsync(queue);
+                command.SenderId = Guid.Parse(Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+                await messageQueueService.PublishMessageAsync(command);
 
                 // send to all participant in conversation
-                await Clients.Caller.SendAsync("MessageQueued", queue);
-
-
+                await Clients.Caller.SendAsync("MessageQueued", command);
             }
             catch (Exception ex)
             {

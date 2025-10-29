@@ -19,7 +19,8 @@ namespace MyProject.API.Controllers
     [Produces("application/json")]
     public class AuthController(
         ISender sender,
-        IRedisService redisService) : ControllerBase
+        IRedisService redisService,
+        IMessageQueueService<SendOtpCommand> messageQueueService) : ControllerBase
     {
         /// <summary>
         /// login
@@ -134,8 +135,8 @@ namespace MyProject.API.Controllers
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ForgotPassword([FromBody] SendOtpCommand command)
         {
-            var result = await sender.Send(command);
-            return Ok(ApiResponse<bool>.SuccessResponse(result, "If the email is registered, please check otp in email"));
+            await messageQueueService.PublishMessageAsync(command);
+            return Ok(ApiResponse<bool>.SuccessResponse(true, "If the email is registered, please check otp in email"));
         }
 
         /// <summary>
