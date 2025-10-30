@@ -7,7 +7,7 @@ using MyProject.Application.Features.User.Commands.Delete;
 using MyProject.Application.Features.User.Commands.Update;
 using MyProject.Application.Features.User.DTO;
 using MyProject.Application.Features.User.Queries;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Services;
 using MyProject.Core.Enum;
 using System.Security.Claims;
 

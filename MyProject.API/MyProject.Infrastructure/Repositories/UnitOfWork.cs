@@ -1,4 +1,5 @@
-﻿using MyProject.Application.Interface;
+﻿using MyProject.Application.Interface.Data;
+using MyProject.Application.Interface.Data.Repositories;
 using MyProject.Infrastructure.Data;
 
 namespace MyProject.Infrastructure.Repositories
@@ -10,13 +11,22 @@ namespace MyProject.Infrastructure.Repositories
 
         public IMessageRepository MessageRepository { get; }
         public IRoleRepository RoleRepository { get; }
+        public IConversationRepository ConversationRepository { get; }
+        public IParticipantRepository ParticipantRepository { get; }
 
-        public UnitOfWork(AppDbContext context)
+        public UnitOfWork(AppDbContext context, 
+            IUserRepository userRepository, 
+            IMessageRepository messageRepository, 
+            IRoleRepository roleRepository,
+            IConversationRepository conversationRepository,
+            IParticipantRepository participantRepository)
         {
             _context = context;
-            UserRepository = new UserRepository(context);
-            MessageRepository = new MessageRepository(context);
-            RoleRepository = new RoleRepository(context);
+            UserRepository = userRepository;
+            MessageRepository = messageRepository;
+            RoleRepository = roleRepository;
+            ConversationRepository = conversationRepository;
+            ParticipantRepository = participantRepository;
         }
 
         public async Task BeginTransactionAsync()

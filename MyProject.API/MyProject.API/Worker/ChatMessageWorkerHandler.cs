@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using MyProject.API.Hubs;
 using MyProject.Application.Features.Message.Command.Create;
-using MyProject.Application.Interface.Worker;
+using MyProject.Application.Interface.Workers;
 
 namespace MyProject.API.Worker
 {

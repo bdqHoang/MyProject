@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MyProject.Application.Features.User.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 
 namespace MyProject.Application.Features.User.Queries
 {

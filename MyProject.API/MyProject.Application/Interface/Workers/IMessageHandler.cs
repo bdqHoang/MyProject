@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyProject.Application.Interface.Worker
+namespace MyProject.Application.Interface.Workers
 {
     public interface IMessageHandler<T> where T : IQueueableMessage
     {

@@ -1,7 +1,7 @@
 ﻿using MyProject.Application.Features.User.DTO;
 using MyProject.Core.Entities;
 
-namespace MyProject.Application.Interface
+namespace MyProject.Application.Interface.Services
 {
     public interface ITokenService
     {

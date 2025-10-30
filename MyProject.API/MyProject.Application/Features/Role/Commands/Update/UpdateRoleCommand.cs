@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MyProject.Application.Features.Role.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 using MyProject.Core.Entities;
 
 namespace MyProject.Application.Features.Role.Commands.Update
@@ -19,11 +19,11 @@ namespace MyProject.Application.Features.Role.Commands.Update
     {
         public async Task<RoleDetailRes> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
         {
-            var existingRole = await _unitOfWork.RoleRepository.GetRoleByIdAsync(request.Id) ?? throw new KeyNotFoundException("Role not found");
+            var existingRole = await _unitOfWork.RoleRepository.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException("Role not found");
             _mapper.Map(request,existingRole);
             existingRole.UpdatedAt = DateTime.UtcNow;
             
-            _unitOfWork.RoleRepository.UpdateRole(existingRole);
+            _unitOfWork.RoleRepository.Update(existingRole);
             await _unitOfWork.CommitAsync();
 
             return _mapper.Map<RoleDetailRes>(existingRole);

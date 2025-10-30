@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using MyProject.Application.Features.Auth.Command.ForgotPassword;
-using MyProject.Application.Interface.Worker;
+using MyProject.Application.Interface.Workers;
 
 namespace MyProject.API.Worker
 {

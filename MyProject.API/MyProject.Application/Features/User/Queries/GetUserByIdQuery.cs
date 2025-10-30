@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MyProject.Application.Features.User.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ namespace MyProject.Application.Features.User.Queries
     {
         public async Task<UserDetailRes> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            var user = await _unitOfWork.UserRepository.GetUserByIdAsync(request.Id);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(request.Id);
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found");

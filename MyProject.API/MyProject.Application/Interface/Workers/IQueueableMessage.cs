@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MyProject.Application.Interface.Worker
+namespace MyProject.Application.Interface.Workers
 {
     public interface IQueueableMessage
     {

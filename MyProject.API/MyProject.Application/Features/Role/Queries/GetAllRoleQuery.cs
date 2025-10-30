@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MyProject.Application.Features.Role.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ namespace MyProject.Application.Features.Role.Queries
     {
         public async Task<IEnumerable<RoleDetailRes>> Handle(GetAllRoleQuery request, CancellationToken cancellationToken)
         {
-            var roles = await _unitOfWork.RoleRepository.GetAllRolesAsync();
+            var roles = await _unitOfWork.RoleRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<RoleDetailRes>>(roles);
         }
     }

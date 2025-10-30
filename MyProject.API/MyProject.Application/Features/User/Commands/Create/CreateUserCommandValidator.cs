@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 
 namespace MyProject.Application.Features.User.Commands.Create
 {
@@ -39,7 +39,7 @@ namespace MyProject.Application.Features.User.Commands.Create
 
             RuleFor(x => x.RoleId)
                 .NotEmpty().WithMessage("Role is required")
-                .MustAsync(async (roleId, cancellation) => (await _unitOfWork.RoleRepository.GetRoleByIdAsync(roleId)) != null).WithMessage("Role invalid");
+                .MustAsync(async (roleId, cancellation) => (await _unitOfWork.RoleRepository.GetByIdAsync(roleId)) != null).WithMessage("Role invalid");
             
         }
     }

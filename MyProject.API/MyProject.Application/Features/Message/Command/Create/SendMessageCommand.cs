@@ -2,8 +2,8 @@
 using MediatR;
 using MemoryPack;
 using MyProject.Application.Features.Message.DTO;
-using MyProject.Application.Interface;
-using MyProject.Application.Interface.Worker;
+using MyProject.Application.Interface.Data;
+using MyProject.Application.Interface.Workers;
 using MyProject.Core.Entities;
 using MyProject.Core.Enum;
 using System.Text.Json.Serialization;
@@ -39,14 +39,14 @@ namespace MyProject.Application.Features.Message.Command.Create
                 // if exists don't create Conversation
                 if (request.ConversationId.HasValue)
                 {
-                    conversation = await _unitOfWork.MessageRepository.GetConversationByIdAsync(request.ConversationId.Value);
+                    conversation = await _unitOfWork.ConversationRepository.GetByIdAsync(request.ConversationId.Value);
                     if (conversation == null)
                     {
                         throw new KeyNotFoundException("Conversation not found");
                     }
 
                     // check if sender is in conversation
-                    var isParticipant = await _unitOfWork.MessageRepository.IsUserInConversationAsync(conversation.Id, request.SenderId);
+                    var isParticipant = await _unitOfWork.ParticipantRepository.IsUserInConversationAsync(conversation.Id, request.SenderId);
                     if (!isParticipant)
                     {
                         throw new UnauthorizedAccessException("You are not a participant of this conversation");
@@ -56,7 +56,7 @@ namespace MyProject.Application.Features.Message.Command.Create
                 {
                     // find private conversation
                     // if not exists create new conversation
-                    conversation = await _unitOfWork.MessageRepository.GetPrivateConversationAsync(request.SenderId, request.ReciverId);
+                    conversation = await _unitOfWork.ConversationRepository.GetPrivateConversationAsync(request.SenderId, request.ReciverId);
                     if (conversation == null)
                     {
                         // create new conversation
@@ -67,7 +67,7 @@ namespace MyProject.Application.Features.Message.Command.Create
                             Status = true
                         };
 
-                        await _unitOfWork.MessageRepository.CreateConversationAsync(conversation);
+                        await _unitOfWork.ConversationRepository.AddAsync(conversation);
 
                         // create participants
                         var senderParticipant = new ConversationParticipants()
@@ -78,7 +78,7 @@ namespace MyProject.Application.Features.Message.Command.Create
                             JoinedAt = DateTime.UtcNow,
                             Status = true
                         };
-                        await _unitOfWork.MessageRepository.AddParticipantAsync(senderParticipant);
+                        await _unitOfWork.ParticipantRepository.AddAsync(senderParticipant);
 
                         // create receiver participant
                         var receiverParticipant = new ConversationParticipants()
@@ -89,7 +89,7 @@ namespace MyProject.Application.Features.Message.Command.Create
                             JoinedAt = DateTime.UtcNow,
                             Status = true
                         };
-                        await _unitOfWork.MessageRepository.AddParticipantAsync(receiverParticipant);
+                        await _unitOfWork.ParticipantRepository.AddAsync(receiverParticipant);
                     }
                 }
 
@@ -106,16 +106,16 @@ namespace MyProject.Application.Features.Message.Command.Create
                     Status = true
                 };
 
-                await _unitOfWork.MessageRepository.CreateMessageAsync(message);
+                await _unitOfWork.MessageRepository.AddAsync(message);
                 await _unitOfWork.CommitTransactionAsync();
 
 
                 var messageRes = _mapper.Map<MessageRes>(message);
-                message = await _unitOfWork.MessageRepository.GetMessageByIdAsync(message.Id);
-                messageRes.SenderName = message.Sender.Name;
+                message = await _unitOfWork.MessageRepository.GetByIdAsync(message.Id);
+                messageRes.SenderName = message!.Sender.Name;
                 if (!string.IsNullOrEmpty(message.ParrentId.ToString()))
                 {
-                    var parrentMessage = await _unitOfWork.MessageRepository.GetMessageByIdAsync(message.ParrentId!.Value);
+                    var parrentMessage = await _unitOfWork.MessageRepository.GetByIdAsync(message.ParrentId!.Value);
                     if (parrentMessage != null)
                     {
                         messageRes.ParrentName =parrentMessage.Sender!.Name;

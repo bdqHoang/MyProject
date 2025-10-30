@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using MyProject.Application.Features.Message.Command.Create;
 using MyProject.Application.Features.Message.Command.Update;
-using MyProject.Application.Features.Message.DTO;
 using MyProject.Application.Features.Message.Queries;
-using MyProject.Application.Interface;
-using MyProject.Core.Enum;
+using MyProject.Application.Interface.Data;
+using MyProject.Application.Interface.Infrastructure;
 using System.Security.Claims;
 
 namespace MyProject.API.Hubs
@@ -135,7 +134,7 @@ namespace MyProject.API.Hubs
             if (isParticipant)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"conversation_{conversationId}");
-                await unitOfWork.MessageRepository.UpdateLastSeenAsync(conversationId, userId);
+                await unitOfWork.ParticipantRepository.UpdateLastSeenAsync(conversationId, userId);
                 await unitOfWork.CommitAsync();
             }
         }

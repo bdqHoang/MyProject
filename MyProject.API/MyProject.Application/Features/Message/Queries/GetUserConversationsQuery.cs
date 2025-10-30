@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
 using MyProject.Application.Features.Message.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
+using MyProject.Application.Interface.Data.Repositories;
 
 namespace MyProject.Application.Features.Message.Queries
 {
@@ -12,14 +13,14 @@ namespace MyProject.Application.Features.Message.Queries
         public int PageSize { get; set; } = 20;
     }
     public class GetUserConversationsQueryHandler(
-        IMessageRepository messageRepository,
+        IUnitOfWork unitOfWork,
         IMapper mapper
         ) : IRequestHandler<GetUserConversationsQuery, List<ConversationRes>>
     {
         public async Task<List<ConversationRes>> Handle(GetUserConversationsQuery request, CancellationToken cancellationToken)
         {
-            var conversations = await messageRepository.GetUserConversationsAsync(request.UserId, request.Page, request.PageSize);
-            var conversationUnRead = await messageRepository.GetAllUnreadMessageCountsAsync(request.UserId);
+            var conversations = await unitOfWork.ConversationRepository.GetUserConversationsAsync(request.UserId, request.Page, request.PageSize);
+            var conversationUnRead = await unitOfWork.ParticipantRepository.GetAllUnreadMessageCountsAsync(request.UserId);
 
             var conversationRes = mapper.Map<IEnumerable<ConversationRes>>(conversations);
             foreach (var item in conversationRes)

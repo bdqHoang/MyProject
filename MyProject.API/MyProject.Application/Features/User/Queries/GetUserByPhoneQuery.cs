@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 using MyProject.Core.Entities;
 using System;
 using System.Collections.Generic;

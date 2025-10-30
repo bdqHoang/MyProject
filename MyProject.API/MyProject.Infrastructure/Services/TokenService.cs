@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MyProject.Application.Common.Models;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Services;
 using MyProject.Core.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

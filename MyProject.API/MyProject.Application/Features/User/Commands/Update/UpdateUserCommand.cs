@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MyProject.Application.Features.User.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 
 namespace MyProject.Application.Features.User.Commands.Update
 {
@@ -21,16 +21,11 @@ namespace MyProject.Application.Features.User.Commands.Update
     {
         public async Task<UserDetailRes> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            var existsUser = await _unitOfWork.UserRepository.GetUserByIdAsync(request.Id);
-            if (existsUser == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
-
+            var existsUser = await _unitOfWork.UserRepository.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException("User not found");
             _mapper.Map(request, existsUser);
             existsUser.UpdatedAt = DateTime.UtcNow;
 
-            _unitOfWork.UserRepository.UpdateUser(existsUser);
+            _unitOfWork.UserRepository.Update(existsUser);
             await _unitOfWork.CommitAsync();
 
             return _mapper.Map<UserDetailRes>(existsUser);

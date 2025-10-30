@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MyProject.Application.Features.Role.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 using MyProject.Core.Entities;
 
 namespace MyProject.Application.Features.Role.Commands.Create
@@ -23,7 +23,7 @@ namespace MyProject.Application.Features.Role.Commands.Create
             role.UpdatedAt = DateTime.UtcNow;
             role.Status = true;
 
-            await _unitOfWork.RoleRepository.AddRoleAsync(role);
+            await _unitOfWork.RoleRepository.AddAsync(role);
             await _unitOfWork.CommitAsync();
             return role.Id;
         }

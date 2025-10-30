@@ -1,5 +1,5 @@
 ﻿using MyProject.API.Middlewares;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Infrastructure;
 
 namespace MyProject.API.Middlewares
 {

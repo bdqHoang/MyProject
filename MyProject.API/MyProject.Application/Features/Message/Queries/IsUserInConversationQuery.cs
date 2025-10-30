@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 
 namespace MyProject.Application.Features.Message.Queries
 {
@@ -12,7 +12,7 @@ namespace MyProject.Application.Features.Message.Queries
     {
         public async Task<bool> Handle(IsUserInConversationQuery request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.MessageRepository.IsUserInConversationAsync(request.ConversationId, request.UserId);
+            return await _unitOfWork.ParticipantRepository.IsUserInConversationAsync(request.ConversationId, request.UserId);
         }
     }
 }

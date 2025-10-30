@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using MemoryPack;
-using MyProject.Application.Interface;
-using MyProject.Application.Interface.Worker;
+using MyProject.Application.Interface.Services;
+using MyProject.Application.Interface.Workers;
 using System.Text.Json.Serialization;
 
 namespace MyProject.Application.Features.Auth.Command.ForgotPassword

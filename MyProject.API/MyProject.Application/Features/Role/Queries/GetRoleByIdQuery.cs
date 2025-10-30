@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MyProject.Application.Features.Role.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +18,8 @@ namespace MyProject.Application.Features.Role.Queries
     {
         public async Task<RoleDetailRes> Handle(GetRoleByIdQuery request, CancellationToken cancellationToken)
         {
-            var role = await _unitOfWork.RoleRepository.GetRoleByIdAsync(request.RoleId);
-            if (role == null)
-            {
-                throw new KeyNotFoundException("Role not found");
-            }
-            return _mapper.Map<RoleDetailRes>(role);
+            var role = await _unitOfWork.RoleRepository.GetByIdAsync(request.RoleId);
+            return role == null ? throw new KeyNotFoundException("Role not found") : _mapper.Map<RoleDetailRes>(role);
         }
     }
 }

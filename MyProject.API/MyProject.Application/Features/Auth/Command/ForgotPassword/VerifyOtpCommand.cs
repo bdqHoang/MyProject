@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Services;
 
 namespace MyProject.Application.Features.Auth.Command.ForgotPassword
 {

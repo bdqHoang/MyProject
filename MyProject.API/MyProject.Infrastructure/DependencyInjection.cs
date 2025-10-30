@@ -3,7 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyProject.Application.Features.Message.Command.Create;
 using MyProject.Application.Features.Message.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
+using MyProject.Application.Interface.Data.Repositories;
+using MyProject.Application.Interface.Infrastructure;
+using MyProject.Application.Interface.Services;
 using MyProject.Infrastructure.Data;
 using MyProject.Infrastructure.Repositories;
 using MyProject.Infrastructure.Services;
@@ -31,6 +34,7 @@ namespace MyProject.Infrastructure
                 configuration.SyncTimeout = 5000;
                 return ConnectionMultiplexer.Connect(configuration);
             })
+            .AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>))
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IRoleRepository, RoleRepository>()
             .AddScoped<ITokenService, TokenService>()
@@ -38,6 +42,8 @@ namespace MyProject.Infrastructure
             .AddScoped<IEmailService, EmailService>()
             .AddScoped<IOtpService, OtpService>()
             .AddScoped<IMessageRepository, MessageRepository>()
+            .AddScoped<IConversationRepository, ConversationRepository>()
+            .AddScoped<IParticipantRepository, ParticipantRepository>()
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<IMessageQueueService<SendMessageCommand>, RedisStreamQueueService<SendMessageCommand>>();
 

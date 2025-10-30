@@ -1,5 +1,5 @@
-﻿using MyProject.Application.Interface;
-using MyProject.Application.Interface.Worker;
+﻿using MyProject.Application.Interface.Infrastructure;
+using MyProject.Application.Interface.Workers;
 
 namespace MyProject.API.Worker
 {
@@ -21,7 +21,6 @@ namespace MyProject.API.Worker
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Message Processor Worker {WorkerId} started.", _workerId);
-            //await Task.Delay(Random.Shared.Next(100, 500));
             while (!stoppingToken.IsCancellationRequested)
             {
                 try

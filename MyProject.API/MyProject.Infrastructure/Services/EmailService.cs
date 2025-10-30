@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Services;
 using System.Net;
 using System.Net.Mail;
 

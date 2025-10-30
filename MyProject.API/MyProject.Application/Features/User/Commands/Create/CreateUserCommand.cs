@@ -2,7 +2,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 using MyProject.Core.Entities;
 
 namespace MyProject.Application.Features.User.Commands.Create
@@ -45,7 +45,7 @@ namespace MyProject.Application.Features.User.Commands.Create
             user.UpdatedAt = DateTime.UtcNow;
             user.Status = true;
 
-            await _unitOfWork.UserRepository.AddUserAsync(user);
+            await _unitOfWork.UserRepository.AddAsync(user);
             await _unitOfWork.CommitAsync();
 
             return user.Id;

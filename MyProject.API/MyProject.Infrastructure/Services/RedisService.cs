@@ -1,4 +1,4 @@
-﻿using MyProject.Application.Interface;
+﻿using MyProject.Application.Interface.Infrastructure;
 using StackExchange.Redis;
 
 namespace MyProject.Infrastructure.Services

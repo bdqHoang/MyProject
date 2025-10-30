@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MyProject.Application.Common.Models;
 using MyProject.Application.Features.Auth.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
+using MyProject.Application.Interface.Services;
 using MyProject.Core.Entities;
 
 namespace MyProject.Application.Features.Auth.Command.Login
@@ -43,7 +44,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
                 {
                     user.Status = false; // lock account
                 }
-                _unitOfWork.UserRepository.UpdateUser(user);
+                _unitOfWork.UserRepository.Update(user);
                 await _unitOfWork.CommitAsync();
                 throw new UnauthorizedAccessException($"Incorrect email or password. You still have {5 - user.RetryPassworkCount} attempts left.");
             }
@@ -54,9 +55,9 @@ namespace MyProject.Application.Features.Auth.Command.Login
             }
 
             // Get role user
-            var userDetail = await _unitOfWork.UserRepository.GetUserByIdAsync(user.Id);
+            var userDetail = await _unitOfWork.UserRepository.GetByIdAsync(user.Id);
 
-            if (string.IsNullOrEmpty(userDetail.Role.Name))
+            if (string.IsNullOrEmpty(userDetail!.Role.Name))
             {
                 throw new UnauthorizedAccessException("User not role found");
             }
@@ -68,7 +69,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.Value.RefreshTokenExpirationInDays);
             user.UpdatedAt = DateTime.UtcNow;
-            _unitOfWork.UserRepository.UpdateUser(user);
+            _unitOfWork.UserRepository.Update(user);
             await _unitOfWork.CommitAsync();
 
             return new LoginRes

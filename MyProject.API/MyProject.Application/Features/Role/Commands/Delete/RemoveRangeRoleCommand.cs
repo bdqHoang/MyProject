@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 
 namespace MyProject.Application.Features.Role.Commands.Delete
 {
@@ -10,13 +10,7 @@ namespace MyProject.Application.Features.Role.Commands.Delete
     {
         public async Task<bool> Handle(RemoveRangeRoleCommand request, CancellationToken cancellationToken)
         {
-            var lstRole = await _unitOfWork.RoleRepository.GetAllRolesAsync();
-            var rolesToRemove = lstRole.Where(r => request.data.Contains(r.Id)).ToList();
-            if (!rolesToRemove.Any())
-            {
-                throw new KeyNotFoundException("No roles found for the provided IDs.");
-            }
-            _unitOfWork.RoleRepository.RemoveRangeRole(rolesToRemove);
+            _unitOfWork.RoleRepository.RemoveRange(request.data);
             await _unitOfWork.CommitAsync();
             return true;
         }

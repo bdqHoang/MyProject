@@ -1,5 +1,6 @@
 ﻿using MediatR;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
+using MyProject.Application.Interface.Services;
 
 namespace MyProject.Application.Features.User.Commands.Update
 {
@@ -19,7 +20,7 @@ namespace MyProject.Application.Features.User.Commands.Update
 
             user.IsValidEmail = true;
             user.UpdatedAt = DateTime.UtcNow;
-            _unitOfWork.UserRepository.UpdateUser(user);
+            _unitOfWork.UserRepository.Update(user);
             await _unitOfWork.CommitAsync();
 
             return isValid;

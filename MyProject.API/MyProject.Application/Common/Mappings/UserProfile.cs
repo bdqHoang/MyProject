@@ -22,7 +22,7 @@ namespace MyProject.Application.Common.Mappings
             // map from Entity to DTO User detail Response
             CreateMap<Users, UserDetailRes>();
             CreateMap<UserDetailRes,Users>();
-            CreateMap<LoginRes, Users>();
+            CreateMap<Users, LoginRes>();
             #endregion
 
             #region update user

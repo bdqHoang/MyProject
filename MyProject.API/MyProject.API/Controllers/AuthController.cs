@@ -8,7 +8,7 @@ using MyProject.Application.Features.Auth.Command.Register;
 using MyProject.Application.Features.Auth.DTO;
 using MyProject.Application.Features.User.DTO;
 using MyProject.Application.Features.User.Queries;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Infrastructure;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 

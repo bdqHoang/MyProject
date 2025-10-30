@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 
 namespace MyProject.Application.Features.User.Commands.Delete
 {
@@ -8,7 +8,7 @@ namespace MyProject.Application.Features.User.Commands.Delete
     {
         public async Task<bool> Handle(RemoveRangeUserCommand request, CancellationToken cancellationToken)
         {
-            await _unitOfWork.UserRepository.RemoveRangeUserAsync(request.data);
+            _unitOfWork.UserRepository.RemoveRange(request.data);
             await _unitOfWork.CommitAsync();
             return true;
         }

@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using MyProject.Application.Features.Auth.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 using MyProject.Core.Entities;
 using MyProject.Core.Enum;
 
@@ -34,7 +34,7 @@ namespace MyProject.Application.Features.Auth.Command.Register
             user.UpdatedAt = DateTime.UtcNow;
             user.Status = true;
 
-            await _unitOfWork.UserRepository.AddUserAsync(user);
+            await _unitOfWork.UserRepository.AddAsync(user);
             await _unitOfWork.CommitAsync();
 
             return true;

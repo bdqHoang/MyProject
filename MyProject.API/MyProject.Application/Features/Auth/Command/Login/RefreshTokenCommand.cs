@@ -3,7 +3,8 @@ using MediatR;
 using Microsoft.Extensions.Options;
 using MyProject.Application.Common.Models;
 using MyProject.Application.Features.Auth.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
+using MyProject.Application.Interface.Services;
 
 namespace MyProject.Application.Features.Auth.Command.Login
 {
@@ -29,7 +30,7 @@ namespace MyProject.Application.Features.Auth.Command.Login
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.Value.RefreshTokenExpirationInDays);
             user.UpdatedAt = DateTime.UtcNow;
-            _unitOfWork.UserRepository.UpdateUser(user);
+            _unitOfWork.UserRepository.Update(user);
             await _unitOfWork.CommitAsync();
 
             var logginRes = _mapper.Map<LoginRes>(user);

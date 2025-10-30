@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using MyProject.Application.Features.Role.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace MyProject.Application.Features.Role.Commands.Delete
     {
         public async Task<bool> Handle(DeleteRoleCommand request, CancellationToken cancellationToken)
         {
-            await _unitOfWork.RoleRepository.DeleteRoleAsync(request.Id);
+            _unitOfWork.RoleRepository.Delete(request.Id);
             await _unitOfWork.CommitAsync();
             return true;
         }

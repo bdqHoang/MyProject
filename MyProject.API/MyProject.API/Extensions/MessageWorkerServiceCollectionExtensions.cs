@@ -1,5 +1,5 @@
 ﻿using MyProject.API.Worker;
-using MyProject.Application.Interface.Worker;
+using MyProject.Application.Interface.Workers;
 
 namespace MyProject.API.Extensions
 {

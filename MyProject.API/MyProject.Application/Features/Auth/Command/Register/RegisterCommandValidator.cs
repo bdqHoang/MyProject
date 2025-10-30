@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data.Repositories;
 
 namespace MyProject.Application.Features.Auth.Command.Register
 {

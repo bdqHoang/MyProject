@@ -1,7 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using MyProject.Application.Features.Auth.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
+using MyProject.Application.Interface.Infrastructure;
 using MyProject.Core.Entities;
 using System.Text;
 
@@ -31,7 +32,7 @@ namespace MyProject.Application.Features.Auth.Command.ForgotPassword
             user.Password = passwordHaser.HashPassword(user, request.NewPassword);
             user.UpdatedAt = DateTime.UtcNow;
             await redisService.DeleteAsync(key);
-            _unitOfWork.UserRepository.UpdateUser(user);
+            _unitOfWork.UserRepository.Update(user);
             await _unitOfWork.CommitAsync();
             return true;
         }

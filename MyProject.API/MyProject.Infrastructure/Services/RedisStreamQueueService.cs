@@ -1,7 +1,7 @@
 ﻿using MemoryPack;
 using Microsoft.Extensions.Logging;
-using MyProject.Application.Interface;
-using MyProject.Application.Interface.Worker;
+using MyProject.Application.Interface.Infrastructure;
+using MyProject.Application.Interface.Workers;
 using StackExchange.Redis;
 
 namespace MyProject.Infrastructure.Services

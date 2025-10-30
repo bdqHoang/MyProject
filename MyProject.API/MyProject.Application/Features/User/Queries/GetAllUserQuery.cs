@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MyProject.Application.Features.User.DTO;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 
 namespace MyProject.Application.Features.User.Queries
 {
@@ -13,7 +13,7 @@ namespace MyProject.Application.Features.User.Queries
     {
         public async Task<IEnumerable<UserDetailRes>> Handle(GetAllUserQuery request, CancellationToken cancellationToken)
         {
-            var users = await _unitOfWork.UserRepository.GetAllUsersAsync();
+            var users = await _unitOfWork.UserRepository.GetAllAsync();
                 
 
             return _mapper.Map<IEnumerable<UserDetailRes>>(users);

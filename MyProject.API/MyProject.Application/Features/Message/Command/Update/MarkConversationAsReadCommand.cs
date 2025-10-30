@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using MyProject.Application.Interface;
+using MyProject.Application.Interface.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace MyProject.Application.Features.Message.Command.Update
     {
         public async Task Handle(MarkConversationAsReadCommand request, CancellationToken cancellationToken)
         {
-            var isPaticiant = await _unitOfWork.MessageRepository.IsUserInConversationAsync(request.ConversationId, request.UserId);
+            var isPaticiant = await _unitOfWork.ParticipantRepository.IsUserInConversationAsync(request.ConversationId, request.UserId);
             if (!isPaticiant)
             {
                 throw new UnauthorizedAccessException("User not author view conversation");
