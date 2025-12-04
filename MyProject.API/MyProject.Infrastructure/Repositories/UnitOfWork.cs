@@ -13,13 +13,15 @@ namespace MyProject.Infrastructure.Repositories
         public IRoleRepository RoleRepository { get; }
         public IConversationRepository ConversationRepository { get; }
         public IParticipantRepository ParticipantRepository { get; }
+        public IDeviceTokenRepository DeviceTokenRepository { get; }
 
         public UnitOfWork(AppDbContext context, 
             IUserRepository userRepository, 
             IMessageRepository messageRepository, 
             IRoleRepository roleRepository,
             IConversationRepository conversationRepository,
-            IParticipantRepository participantRepository)
+            IParticipantRepository participantRepository,
+            IDeviceTokenRepository deviceTokenRepository)
         {
             _context = context;
             UserRepository = userRepository;
@@ -27,6 +29,7 @@ namespace MyProject.Infrastructure.Repositories
             RoleRepository = roleRepository;
             ConversationRepository = conversationRepository;
             ParticipantRepository = participantRepository;
+            DeviceTokenRepository = deviceTokenRepository;
         }
 
         public async Task BeginTransactionAsync()

@@ -22,7 +22,13 @@ namespace MyProject.Application.Features.Auth.Command.ForgotPassword
         {
             var otp = await otpService.GenerateOtpAsync(request.Email);
             var subject = "Reset Password by MyApp";
-            var body = $"Your Otp reset is {otp}";
+            var body = $@"
+                <p>Xin chào,</p>
+                <p>Mã OTP đặt lại mật khẩu của bạn là:</p>
+                <p><strong>{otp}</strong></p>
+                <p>Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
+                <p>Trân trọng,<br/>Đội ngũ MyApp</p>
+                ";
             return await emailService.SendEmailAsync(request.Email, subject, body);
         }
     }

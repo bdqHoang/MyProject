@@ -14,6 +14,7 @@ namespace MyProject.Application.Interface.Data
         IConversationRepository ConversationRepository { get; }
         IParticipantRepository ParticipantRepository { get; }
         IRoleRepository RoleRepository { get; }
+        IDeviceTokenRepository DeviceTokenRepository { get; }
         Task<int> CommitAsync(CancellationToken ct = default);
         Task BeginTransactionAsync();
         Task CommitTransactionAsync();

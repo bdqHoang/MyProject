@@ -11,6 +11,8 @@ namespace MyProject.Infrastructure.Data
         public DbSet<Messages> Messages { get; set; }
         public DbSet<Conversations> Conversations { get; set; }
         public DbSet<ConversationParticipants> ConversationParticipants { get; set; }
+        public DbSet<DeviceToken> DeviceTokens { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,6 +21,8 @@ namespace MyProject.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new MessageConfiguration());
             modelBuilder.ApplyConfiguration(new ConversationConfiguration());
             modelBuilder.ApplyConfiguration(new ConversationParticipantConfiguration());
+            modelBuilder.ApplyConfiguration(new DeviceTokenConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationConfiguration());
         }
     }
 }
